@@ -1,0 +1,26 @@
+/* src/assets/main.css */
+
+/* 1. Resetea los estilos por defecto del navegador.
+  2. Aplica la fuente Inter a toda la app.
+*/
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Colores del tema (PrimeVue los controlará) */
+  background-color: var(--p-surface-ground);
+  color: var(--p-text-color);
+}
+
+/* Resetea #app para que no esté centrada 
+  (como en la demo de Vite) 
+*/
+#app {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}

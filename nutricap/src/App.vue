@@ -15,6 +15,8 @@
 
   <main class="p-4">
     <RouterView />
+    <InputText placeholder="Hola" />
+    <Button label="Hola" />
   </main>
 </template>
 

@@ -22,14 +22,28 @@ import Card from 'primevue/card'
 import ToastService from 'primevue/toastservice'
 import Toast from 'primevue/toast'
 import Menubar from 'primevue/menubar'
-
+import InputText from 'primevue/inputtext'
 const app = createApp(App)
 
 app.use(router) // Usa Vue Router
 
 // 4. Configura el tema
 const MyPreset = definePreset(Aura, {
-  // Aquí no necesitamos sobreescribir nada por ahora
+  semantic: {
+    primary: {
+      50: '{indigo.50}',
+      100: '{indigo.100}',
+      200: '{indigo.200}',
+      300: '{indigo.300}',
+      400: '{indigo.400}',
+      500: '{indigo.500}',
+      600: '{indigo.600}',
+      700: '{indigo.700}',
+      800: '{indigo.800}',
+      900: '{indigo.900}',
+      950: '{indigo.950}',
+    },
+  },
 })
 
 app.use(PrimeVue, {
@@ -51,5 +65,5 @@ app.component('Button', Button)
 app.component('Card', Card)
 app.component('Toast', Toast)
 app.component('Menubar', Menubar)
-
+app.component('InputText', InputText)
 app.mount('#app')

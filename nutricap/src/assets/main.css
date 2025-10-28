@@ -3,24 +3,35 @@
 /* 1. Resetea los estilos por defecto del navegador.
   2. Aplica la fuente Inter a toda la app.
 */
-body {
+/*body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: Arial, 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
   /* Colores del tema (PrimeVue los controlará) */
-  background-color: var(--p-surface-ground);
+/*background-color: var(--p-surface-ground);
   color: var(--p-text-color);
-}
+}*/
 
 /* Resetea #app para que no esté centrada 
   (como en la demo de Vite) 
 */
-#app {
+/*#app {
   max-width: none;
   margin: 0;
   padding: 0;
   text-align: left;
+}*/
+/* src/assets/main.css */
+@font-face {
+  font-family: 'Inclusive Sans'; /* Nombre que usarás en CSS */
+  src: url('./fonts/InclusiveSans-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal; /* Define el peso si es una fuente regular */
+  font-style: normal; /* Define el estilo (normal, italic, etc.) */
+}
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Inclusive Sans', Arial, Helvetica, sans-serif;
 }

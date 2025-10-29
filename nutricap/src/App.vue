@@ -10,6 +10,16 @@
           <span class="ml-2">{{ item.label }}</span>
         </RouterLink>
       </template>
+      <template #end>
+        <Button
+          :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
+          @click="toggleDarkMode"
+          text
+          rounded
+          aria-label="Cambiar tema"
+          class="mr-2"
+        />
+      </template>
     </Menubar>
   </header>
 
@@ -25,6 +35,29 @@ import { ref, onMounted } from 'vue'
 import { RouterView, RouterLink } from 'vue-router'
 import { db } from './db' // Importamos Dexie
 import Papa from 'papaparse' // Importamos Papa Parse
+
+// --- 1. Lógica del Modo Oscuro ---
+const isDarkMode = ref(false); // Estado reactivo
+
+// Función que cambia el tema
+function toggleDarkMode() {
+  isDarkMode.value = !isDarkMode.value; // Invierte el estado
+  
+  // Añade o quita la clase ".p-dark" del <html>
+  document.documentElement.classList.toggle('p-dark', isDarkMode.value);
+  
+  // Guarda la preferencia en el localStorage del navegador
+  localStorage.setItem('darkMode', isDarkMode.value);
+}
+
+// Función para revisar la preferencia guardada cuando la app carga
+function aplicarTemaGuardado() {
+  const savedMode = localStorage.getItem('darkMode') === 'true';
+  if (savedMode) {
+    isDarkMode.value = true;
+    document.documentElement.classList.add('p-dark');
+  }
+}
 
 // 1. Definimos los items del menú
 const menuItems = ref([

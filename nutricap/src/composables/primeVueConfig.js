@@ -2,7 +2,7 @@
 //PrimeVue
 import PrimeVue from 'primevue/config'
 //Temas y presets
-import { definePreset } from '@primeuix/themes'
+import { definePreset, palette, updatePrimaryPalette } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 //Estilos CSS de PrimeVue
 import 'primeicons/primeicons.css'
@@ -16,21 +16,6 @@ import Menubar from 'primevue/menubar'
 import InputText from 'primevue/inputtext'
 
 const MyPreset = definePreset(Aura, {
-  semantic: {
-    primary: {
-      50: '{indigo.50}',
-      100: '{indigo.100}',
-      200: '{indigo.200}',
-      300: '{indigo.300}',
-      400: '{indigo.400}',
-      500: '{indigo.500}',
-      600: '{indigo.600}',
-      700: '{indigo.700}',
-      800: '{indigo.800}',
-      900: '{indigo.900}',
-      950: '{indigo.950}',
-    },
-  },
 })
 
 export const primeVueConfig = (app) => {
@@ -40,12 +25,13 @@ export const primeVueConfig = (app) => {
       preset: MyPreset,
       options: {
         prefix: 'p',
-        darkModeSelector: 'system',
+        darkModeSelector: '.p-dark',
         cssLayer: false,
       },
     },
   })
-
+  const customPalette = palette('{pink}')
+  updatePrimaryPalette(customPalette)
   app.use(ToastService)
   app.component('Button', Button)
   app.component('Card', Card)

@@ -24,9 +24,8 @@
   </header>
 
   <main class="p-4">
+    <Toast />
     <RouterView />
-    <InputText placeholder="Hola" />
-    <Button label="Hola" />
   </main>
 </template>
 
@@ -37,25 +36,25 @@ import { db } from './db' // Importamos Dexie
 import Papa from 'papaparse' // Importamos Papa Parse
 
 // --- 1. Lógica del Modo Oscuro ---
-const isDarkMode = ref(false); // Estado reactivo
+const isDarkMode = ref(false) // Estado reactivo
 
 // Función que cambia el tema
 function toggleDarkMode() {
-  isDarkMode.value = !isDarkMode.value; // Invierte el estado
-  
+  isDarkMode.value = !isDarkMode.value // Invierte el estado
+
   // Añade o quita la clase ".p-dark" del <html>
-  document.documentElement.classList.toggle('p-dark', isDarkMode.value);
-  
+  document.documentElement.classList.toggle('p-dark', isDarkMode.value)
+
   // Guarda la preferencia en el localStorage del navegador
-  localStorage.setItem('darkMode', isDarkMode.value);
+  localStorage.setItem('darkMode', isDarkMode.value)
 }
 
 // Función para revisar la preferencia guardada cuando la app carga
 function aplicarTemaGuardado() {
-  const savedMode = localStorage.getItem('darkMode') === 'true';
+  const savedMode = localStorage.getItem('darkMode') === 'true'
   if (savedMode) {
-    isDarkMode.value = true;
-    document.documentElement.classList.add('p-dark');
+    isDarkMode.value = true
+    document.documentElement.classList.add('p-dark')
   }
 }
 
@@ -79,59 +78,53 @@ const menuItems = ref([
 ])
 
 // 2. LÓGICA DE CARGA DE DATOS (DEXIE)
-onMounted(async () => {
-  try {
-    const count = await db.alimentos.count()
-    if (count > 0) {
-      console.log('Base de datos ya tiene datos.')
-      return
-    }
+onMounted(() => {
+  aplicarTemaGuardado()
+  db.alimentos
+    .count()
+    .then((count) => {
+      if (count > 0) {
+        console.log('Base de datos ya tiene datos.')
+        return
+      }
+      console.log('Base de datos vacía, cargando alimentos desde CSV...')
+      fetch('/alimentos_mod.csv')
+        .then((response) => response.text())
+        // ... (el resto de tu lógica de carga de dexie)
+        .then((csvText) => {
+          Papa.parse(csvText, {
+            header: true,
+            delimiter: ';',
+            skipEmptyLines: true,
+            dynamicTyping: true,
+            complete: (results) => {
+              const alimentosLimpios = results.data
+                .map((item) => {
+                  Object.keys(item).forEach((key) => {
+                    const valor = item[key]
+                    if (valor === '****') item[key] = null
+                    else if (typeof valor === 'string') item[key] = valor.trim()
+                  })
+                  item.ms = parseFloat(String(item.ms).replace(',', '.')) || null
+                  item.em = parseFloat(String(item.em).replace(',', '.')) || null
+                  item.pb = parseFloat(String(item.pb).replace(',', '.')) || null
+                  item.fdn = parseFloat(String(item.fdn).replace(',', '.')) || null
+                  item.calcio = parseFloat(String(item.calcio).replace(',', '.')) || null
+                  item.fosforo = parseFloat(String(item.fosforo).replace(',', '.')) || null
+                  return item
+                })
+                .filter((item) => item.nombre)
 
-    console.log('Base de datos vacía, cargando alimentos desde CSV...')
-
-    const response = await fetch('/alimentos_mod.csv')
-    const csvText = await response.text()
-
-    Papa.parse(csvText, {
-      header: true,
-      delimiter: ';',
-      skipEmptyLines: true,
-      dynamicTyping: true,
-
-      complete: async (results) => {
-        const alimentosLimpios = results.data
-          .map((item) => {
-            Object.keys(item).forEach((key) => {
-              // Limpia los '****' y cualquier espacio extra
-              const valor = item[key]
-              if (valor === '****') {
-                item[key] = null
-              } else if (typeof valor === 'string') {
-                item[key] = valor.trim()
-              }
-            })
-            // Asegúrate de que los campos numéricos sean números
-            item.ms = parseFloat(String(item.ms).replace(',', '.')) || null
-            item.em = parseFloat(String(item.em).replace(',', '.')) || null
-            item.pb = parseFloat(String(item.pb).replace(',', '.')) || null
-            item.fdn = parseFloat(String(item.fdn).replace(',', '.')) || null
-            item.calcio = parseFloat(String(item.calcio).replace(',', '.')) || null
-            item.fosforo = parseFloat(String(item.fosforo).replace(',', '.')) || null
-
-            return item
+              db.alimentos.bulkAdd(alimentosLimpios).then(() => {
+                console.log(`${alimentosLimpios.length} alimentos cargados.`)
+              })
+            },
           })
-          .filter((item) => item.nombre) // Filtra filas vacías
-
-        await db.alimentos.bulkAdd(alimentosLimpios)
-        console.log(`${alimentosLimpios.length} alimentos cargados desde CSV.`)
-      },
-      error: (err) => {
-        console.error('Error con Papa Parse:', err)
-      },
+        })
     })
-  } catch (error) {
-    console.error('Error al poblar la base de datos:', error)
-  }
+    .catch((error) => {
+      console.error('Error al poblar la base de datos:', error)
+    })
 })
 </script>
 
@@ -168,5 +161,14 @@ onMounted(async () => {
 a.p-menuitem-link {
   text-decoration: none;
   color: inherit;
+}
+
+/* Solo afecta al toast en pantallas pequeñas */
+@media (max-width: 768px) {
+  .custom-toast.p-toast {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+  }
 }
 </style>

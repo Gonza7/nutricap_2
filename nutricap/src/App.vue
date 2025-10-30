@@ -5,7 +5,7 @@
         <span class="font-bold text-lg mr-4">Nutricap</span>
       </template>
       <template #item="{ item, props }">
-        <RouterLink :to="item.route" v-bind="props.action" class="flex align-items-center">
+        <RouterLink :to="item.route" v-bind="props.action" class="flex items-center">
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
         </RouterLink>
@@ -23,7 +23,7 @@
     </Menubar>
   </header>
 
-  <main class="p-4">
+  <main class="flex-grow w-full mx-auto p-4">
     <Toast />
     <RouterView />
   </main>
@@ -36,20 +36,12 @@ import { db } from './db' // Importamos Dexie
 import Papa from 'papaparse' // Importamos Papa Parse
 
 // --- 1. Lógica del Modo Oscuro ---
-const isDarkMode = ref(false) // Estado reactivo
-
-// Función que cambia el tema
+const isDarkMode = ref(false)
 function toggleDarkMode() {
-  isDarkMode.value = !isDarkMode.value // Invierte el estado
-
-  // Añade o quita la clase ".p-dark" del <html>
+  isDarkMode.value = !isDarkMode.value
   document.documentElement.classList.toggle('p-dark', isDarkMode.value)
-
-  // Guarda la preferencia en el localStorage del navegador
   localStorage.setItem('darkMode', isDarkMode.value)
 }
-
-// Función para revisar la preferencia guardada cuando la app carga
 function aplicarTemaGuardado() {
   const savedMode = localStorage.getItem('darkMode') === 'true'
   if (savedMode) {
@@ -129,46 +121,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Estilos para el Menubar y RouterLink */
-.p-menubar {
-  border-radius: 0;
-}
 
-/* Clases de PrimeFlex */
-.mr-4 {
-  margin-right: 1rem;
-}
-.ml-2 {
-  margin-left: 0.5rem;
-}
-.p-4 {
-  padding: 1rem;
-}
-.font-bold {
-  font-weight: 700;
-}
-.text-lg {
-  font-size: 1.125rem;
-}
-.flex {
-  display: flex;
-}
-.align-items-center {
-  align-items: center;
-}
-
-/* Estilo para los links del menú */
-a.p-menuitem-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* Solo afecta al toast en pantallas pequeñas */
-@media (max-width: 768px) {
-  .custom-toast.p-toast {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    right: auto !important;
-  }
-}
 </style>

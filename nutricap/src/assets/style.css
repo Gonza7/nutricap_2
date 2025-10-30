@@ -1,0 +1,58 @@
+
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+
+
+:root {
+    --body-bg: var(--p-surface-50);
+    --body-text-color: var(--p-surface-900);
+    --card-border: 1px solid var(--border-color);
+    --card-bg: var(--p-surface-0);
+    --border-color: var(--p-surface-200);
+    --text-color: var(--p-surface-700);
+    --overlay-background: #ffffff;
+}
+
+:root[class='p-dark'] {
+    --body-bg: var(--p-surface-950);
+    --body-text-color: var(--p-surface-50);
+    --card-border: 1px solid transparent;
+    --card-bg: var(--p-surface-900);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-color: var(--p-surface-0);
+    --overlay-background: var(--p-surface-900);
+}
+
+html {
+    font-size: 14px;
+    line-height: normal;
+    height: 100%; /* Asegura que el HTML ocupe toda la altura */
+}
+
+/* --- CAMBIO 1: Arreglo del body --- */
+body {
+    margin: 0;
+    padding: 0; /* ¡ARREGLO! Quitamos el padding que causaba el margen del Menubar */
+    min-height: 100vh; /* Asegura que el body ocupe toda la altura de la pantalla */
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--body-bg);
+    font-weight: normal;
+    color: var(--body-text-color);
+}
+
+/* --- CAMBIO 2: Arreglo del layout de #app --- */
+/* Esto convierte tu app en un contenedor flexible vertical.
+  El <header> (Menubar) estará arriba.
+  El <main> (RouterView) crecerá para llenar el espacio restante.
+*/
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --- CAMBIO 3: Elimina la regla .card --- */
+/* Eliminamos la regla global ".card" porque ya estamos usando 
+  el componente <Card> de PrimeVue, y esto causaba conflictos.
+*/

@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-import './assets/main.css'
+import './assets/style.css'
 import { primeVueConfig } from './composables/primeVueConfig'
 
 const app = createApp(App)

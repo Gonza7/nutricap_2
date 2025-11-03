@@ -74,8 +74,12 @@ import { ref, onMounted, computed, reactive } from 'vue'
 import { db } from '@/db'
 import { useToast } from 'primevue/usetoast'
 import { useVuelidate } from '@vuelidate/core'
-import { required, numeric, minValue } from '@vuelidate/validators'
+import { required, numeric, minValue, helpers } from '@vuelidate/validators'
 import { useConfirm } from 'primevue/useconfirm'
+
+// Extrae 'withMessage' de 'helpers' para usarlo fácilmente
+const { withMessage } = helpers
+
 // --- Estado general (para la tabla y filtros) ---
 const alimentosRaw = ref([])
 const loading = ref(true)
@@ -102,18 +106,46 @@ const alimento = reactive({
 })
 // --- Validaciones ---
 const rules = {
-  grupo: { required },
-  nombre: { required },
-  ms: { required, numeric, minValue: minValue(0) },
-  em: { required, numeric, minValue: minValue(0) },
-  pb: { required, numeric, minValue: minValue(0) },
-  fdn: { required, numeric, minValue: minValue(0) },
-  calcio: { required, numeric, minValue: minValue(0) },
-  fosforo: { required, numeric, minValue: minValue(0) },
-  precio: { required, numeric, minValue: minValue(0) },
+  grupo: { required: withMessage('El grupo es obligatorio', required) },
+  nombre: { required: withMessage('El nombre es obligatorio', required) },
+  ms: {
+    required: withMessage('El MS es obligatorio', required),
+    numeric: withMessage('El MS debe ser un número', numeric),
+    minValue: withMessage('El MS debe ser mayor o igual a 0', minValue(0)),
+  },
+  em: {
+    required: withMessage('El EM es obligatorio', required),
+    numeric: withMessage('El EM debe ser un número', numeric),
+    minValue: withMessage('El EM debe ser mayor o igual a 0', minValue(0)),
+  },
+  pb: {
+    required: withMessage('El PB es obligatorio', required),
+    numeric: withMessage('El PB debe ser un número', numeric),
+    minValue: withMessage('El PB debe ser mayor o igual a 0', minValue(0)),
+  },
+  fdn: {
+    required: withMessage('El FDN es obligatorio', required),
+    numeric: withMessage('El FDN debe ser un número', numeric),
+    minValue: withMessage('El FDN debe ser mayor o igual a 0', minValue(0)),
+  },
+  calcio: {
+    required: withMessage('El calcio es obligatorio', required),
+    numeric: withMessage('El calcio debe ser un número', numeric),
+    minValue: withMessage('El calcio debe ser mayor o igual a 0', minValue(0)),
+  },
+  fosforo: {
+    required: withMessage('El fósforo es obligatorio', required),
+    numeric: withMessage('El fósforo debe ser un número', numeric),
+    minValue: withMessage('El fósforo debe ser mayor o igual a 0', minValue(0)),
+  },
+  precio: {
+    required: withMessage('El precio es obligatorio', required),
+    numeric: withMessage('El precio debe ser un número', numeric),
+    minValue: withMessage('El precio debe ser mayor o igual a 0', minValue(0)),
+  },
 }
 // Inicializa Vuelidate
-const v$ = useVuelidate(rules, product)
+const v$ = useVuelidate(rules, alimento)
 // --- Cargar alimentos (Se mantiene) ---
 onMounted(() => {
   cargarAlimentos()
@@ -148,40 +180,124 @@ const alimentos = computed(() => {
 })
 
 // --- STUBS DEL CRUD (Placeholders) ---
-// (Toda la lógica de 'form', 'dialogVisible', 'guardar', etc., ha sido eliminada)
-// (Solo quedan las funciones que los botones llaman)
 
+// Función para abrir el diálogo de nuevo alimento
 function abrirDialogNuevo() {
   console.log('Botón "Nuevo Alimento" presionado.')
-  // Aquí puedes empezar a implementar tu lógica
-  toast.add({
-    severity: 'info',
-    summary: 'Función "Crear"',
-    detail: 'Implementa tu lógica aquí.',
-    life: 3000,
-  })
+  //Resetear el objeto alimento
+  alimento.id = null
+  alimento.grupo = ''
+  alimento.nombre = ''
+  alimento.forma = ''
+  alimento.momento = ''
+  alimento.ms = 0
+  alimento.em = 0
+  alimento.pb = 0
+  alimento.fdn = 0
+  alimento.calcio = 0
+  alimento.fosforo = 0
+  alimento.precio = 0
+  //Resetear el estado de envio
+  submitted.value = false
+  //Abrir el dialogo
+  dialog.value = true
 }
-
+// Función para abrir el diálogo para editar un item
 function editarItem(item) {
   console.log('Botón "Editar" presionado para:', item.nombre)
-  // Aquí puedes empezar a implementar tu lógica
-  toast.add({
-    severity: 'info',
-    summary: 'Función "Editar"',
-    detail: `Implementa tu lógica para: ${item.nombre}`,
-    life: 3000,
-  })
+  //Copiar los datos del item al objeto alimento
+  Object.assign(alimento, item)
+  //Resetear el estado de envio
+  submitted.value = false
+  //Abrir el dialogo
+  dialog.value = true
 }
-
+// Función para confirmar eliminación
 function confirmarEliminar(item) {
   console.log('Botón "Eliminar" presionado para:', item.nombre)
-  // Aquí puedes empezar a implementar tu lógica
-  toast.add({
-    severity: 'warn',
-    summary: 'Función "Eliminar"',
-    detail: `Implementa tu lógica para: ${item.nombre}`,
-    life: 3000,
+  // Mostrar confirmación antes de eliminar
+  confirm.require({
+    message: `¿Estás seguro de que deseas eliminar el alimento "${item.nombre}"?`,
+    header: 'Confirmar Eliminación',
+    icon: 'pi pi-exclamation-triangle',
+    acceptClass: 'p-button-danger',
+    // Acción al aceptar
+    accept: () => {
+      // Lógica para eliminar el alimento
+      alimentosRaw.value = alimentosRaw.value.filter((a) => a.id !== item.id)
+      // Mostrar notificación de éxito
+      toast.add({
+        severity: 'success',
+        summary: 'Eliminado',
+        detail: `El alimento "${item.nombre}" ha sido eliminado.`,
+        life: 3000,
+      })
+    },
+    // Acción al rechazar
+    reject: () => {
+      console.log('Eliminación cancelada.')
+    },
   })
+}
+// Función para cerrar el diálogo
+function cerrarDialog() {
+  //Cerrar el diálogo
+  dialog.value = false
+  //Resetear el estado de envio
+  submitted.value = false
+}
+//Función para guardar el alimento (nuevo o editado)
+async function guardarAlimento() {
+  //Marcar que se ha intentado enviar el formulario
+  submitted.value = true
+  //Validar el formulario
+  const isValid = await v$.value.$validate()
+  //Si no es válido, mostrar mensaje de error y salir
+  if (!isValid) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Por favor, corrige los errores en el formulario.',
+      life: 3000,
+    })
+    return
+  }
+  //Si es válido, proceder a guardar
+  console.log('Guardando alimento:', alimento)
+  if (alimento.id) {
+    // Lógica para actualizar un alimento existente
+    // Buscar el índice del alimento en el array
+    const index = alimentosRaw.value.findIndex((a) => a.id === alimento.id)
+    // Actualizar el alimento en el array
+    if (index !== -1) {
+      // Reemplazar el alimento en el array
+      alimentosRaw.value[index] = { ...alimento }
+      // Mostrar notificación de éxito
+      toast.add({
+        severity: 'success',
+        summary: 'Actualizado',
+        detail: `El alimento "${alimento.nombre}" ha sido actualizado.`,
+        life: 3000,
+      })
+    }
+  } else {
+    // Lógica para agregar un nuevo alimento
+    // Asignar un nuevo ID (simple incremento)
+    const nuevoId = alimentosRaw.value.length
+      ? Math.max(...alimentosRaw.value.map((a) => a.id)) + 1
+      : 1
+    // Agregar el nuevo alimento al array
+    alimentosRaw.value.push({ ...alimento, id: nuevoId })
+    // Mostrar notificación de éxito
+    toast.add({
+      severity: 'success',
+      summary: 'Agregado',
+      detail: `El alimento "${alimento.nombre}" ha sido agregado.`,
+      life: 3000,
+    })
+  }
+  //Cerrar el diálogo
+  dialog.value = false
 }
 </script>
 

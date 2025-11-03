@@ -19,6 +19,8 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
+import ConfirmDialog from 'primevue/confirmdialog'
+import ConfirmationService from 'primevue/confirmationservice'
 
 const MyPreset = definePreset(Aura, {})
 const Noir = definePreset(Aura, {
@@ -94,5 +96,7 @@ export const primeVueConfig = (app) => {
   app.component('Column', Column)
   app.component('ColumnGroup', ColumnGroup)
   app.component('Row', Row)
+  app.component('ConfirmDialog', ConfirmDialog)
   app.use(ToastService)
+  app.use(ConfirmationService)
 }

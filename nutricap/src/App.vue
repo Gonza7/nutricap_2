@@ -25,6 +25,7 @@
 
   <main class="flex-grow w-full mx-auto p-4">
     <Toast />
+    <ConfirmDialog />
     <RouterView />
   </main>
 </template>
@@ -120,6 +121,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

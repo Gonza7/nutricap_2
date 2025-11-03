@@ -8,8 +8,18 @@
     </template>
 
     <template #content>
-      <DataTable :value="alimentos" :loading="loading" paginator :rows="15" :rowsPerPageOptions="[10, 15, 30, 50]"
-        removableSort stripedRows size="small" tableStyle="min-width: 50rem" dataKey="id">
+      <DataTable
+        :value="alimentos"
+        :loading="loading"
+        paginator
+        :rows="15"
+        :rowsPerPageOptions="[10, 15, 30, 50]"
+        removableSort
+        stripedRows
+        size="small"
+        tableStyle="min-width: 50rem"
+        dataKey="id"
+      >
         <template #header>
           <div class="filtros-tabla">
             <InputText v-model="filtroGrupo" placeholder="Filtrar por Grupo" />
@@ -29,33 +39,81 @@
         <Column field="fosforo" header="Fósforo" sortable></Column>
         <Column field="precio" header="Precio" sortable></Column>
 
-        <Column header="Acciones" :exportable="false" style="min-width: 8rem" frozen alignFrozen="right">
+        <Column
+          header="Acciones"
+          :exportable="false"
+          style="min-width: 8rem"
+          frozen
+          alignFrozen="right"
+        >
           <template #body="slotProps">
-            <Button icon="pi pi-pencil" variant="text" severity="contrast" class="p-button p-button mr-2"
-              @click="editarItem(slotProps.data)" />
-            <Button icon="pi pi-trash" variant="text" severity="danger" class="p-button p-button"
-              @click="confirmarEliminar(slotProps.data)" />
+            <Button
+              icon="pi pi-pencil"
+              variant="text"
+              severity="contrast"
+              class="p-button p-button mr-2"
+              @click="editarItem(slotProps.data)"
+            />
+            <Button
+              icon="pi pi-trash"
+              variant="text"
+              severity="danger"
+              class="p-button p-button"
+              @click="confirmarEliminar(slotProps.data)"
+            />
           </template>
         </Column>
         <template #empty> No se encontraron alimentos. </template>
       </DataTable>
     </template>
   </Card>
-
-  </template>
+</template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
 import { db } from '@/db'
 import { useToast } from 'primevue/usetoast'
-
+import { useVuelidate } from '@vuelidate/core'
+import { required, numeric, minValue } from '@vuelidate/validators'
+import { useConfirm } from 'primevue/useconfirm'
 // --- Estado general (para la tabla y filtros) ---
 const alimentosRaw = ref([])
 const loading = ref(true)
 const filtroGrupo = ref('')
 const filtroNombre = ref('')
 const toast = useToast()
-
+const confirm = useConfirm()
+const dialog = ref(false)
+const submitted = ref(false)
+// Modelo para el formulario (un solo producto)
+const alimento = reactive({
+  id: null,
+  grupo: '',
+  nombre: '',
+  forma: '',
+  momento: '',
+  ms: 0,
+  em: 0,
+  pb: 0,
+  fdn: 0,
+  calcio: 0,
+  fosforo: 0,
+  precio: 0,
+})
+// --- Validaciones ---
+const rules = {
+  grupo: { required },
+  nombre: { required },
+  ms: { required, numeric, minValue: minValue(0) },
+  em: { required, numeric, minValue: minValue(0) },
+  pb: { required, numeric, minValue: minValue(0) },
+  fdn: { required, numeric, minValue: minValue(0) },
+  calcio: { required, numeric, minValue: minValue(0) },
+  fosforo: { required, numeric, minValue: minValue(0) },
+  precio: { required, numeric, minValue: minValue(0) },
+}
+// Inicializa Vuelidate
+const v$ = useVuelidate(rules, product)
 // --- Cargar alimentos (Se mantiene) ---
 onMounted(() => {
   cargarAlimentos()
@@ -100,7 +158,7 @@ function abrirDialogNuevo() {
     severity: 'info',
     summary: 'Función "Crear"',
     detail: 'Implementa tu lógica aquí.',
-    life: 3000
+    life: 3000,
   })
 }
 
@@ -111,7 +169,7 @@ function editarItem(item) {
     severity: 'info',
     summary: 'Función "Editar"',
     detail: `Implementa tu lógica para: ${item.nombre}`,
-    life: 3000
+    life: 3000,
   })
 }
 
@@ -122,7 +180,7 @@ function confirmarEliminar(item) {
     severity: 'warn',
     summary: 'Función "Eliminar"',
     detail: `Implementa tu lógica para: ${item.nombre}`,
-    life: 3000
+    life: 3000,
   })
 }
 </script>

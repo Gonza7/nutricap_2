@@ -2,24 +2,14 @@
   <Card>
     <template #title>
       <div class="flex justify-content-between align-items-center mb-3">
-        <span class="text-xl font-semibold">Gestión de Alimentos</span>
+        <span class="text-xl font-semibold">Tabla de Alimentos</span>
         <Button label="Nuevo Alimento" icon="pi pi-plus" @click="abrirDialogNuevo" />
       </div>
     </template>
 
     <template #content>
-      <DataTable
-        :value="alimentos"
-        :loading="loading"
-        paginator
-        :rows="15"
-        :rowsPerPageOptions="[10, 15, 30, 50]"
-        removableSort
-        stripedRows
-        size="small"
-        tableStyle="min-width: 50rem"
-        dataKey="id"
-      >
+      <DataTable :value="alimentos" :loading="loading" paginator :rows="15" :rowsPerPageOptions="[10, 15, 30, 50]"
+        removableSort stripedRows size="small" tableStyle="min-width: 50rem" dataKey="id">
         <template #header>
           <div class="filtros-tabla">
             <InputText v-model="filtroGrupo" placeholder="Filtrar por Grupo" />
@@ -39,32 +29,136 @@
         <Column field="fosforo" header="Fósforo" sortable></Column>
         <Column field="precio" header="Precio" sortable></Column>
 
-        <Column
-          header="Acciones"
-          :exportable="false"
-          style="min-width: 8rem"
-          frozen
-          alignFrozen="right"
-        >
+        <Column header="Acciones" :exportable="false" style="min-width: 8rem" frozen alignFrozen="right">
           <template #body="slotProps">
-            <Button
-              icon="pi pi-pencil"
-              variant="text"
-              severity="contrast"
-              class="p-button p-button mr-2"
-              @click="editarItem(slotProps.data)"
-            />
-            <Button
-              icon="pi pi-trash"
-              variant="text"
-              severity="danger"
-              class="p-button p-button"
-              @click="confirmarEliminar(slotProps.data)"
-            />
+            <Button icon="pi pi-pencil" variant="text" severity="contrast" class="p-button p-button mr-2"
+              @click="editarItem(slotProps.data)" />
+            <Button icon="pi pi-trash" variant="text" severity="danger" class="p-button p-button"
+              @click="confirmarEliminar(slotProps.data)" />
           </template>
         </Column>
         <template #empty> No se encontraron alimentos. </template>
       </DataTable>
+      <Dialog v-model:visible="dialog" :style="{ width: '450px' }" header="Detalles del alimento" :modal="true">
+
+        <div class="flex flex-col gap-6">
+
+          <div>
+            <label for="grupo" class="block font-bold mb-3">Grupo</label>
+            <InputText id="grupo" v-model.trim="alimento.grupo" :required="true"
+              :invalid="v$.grupo.$invalid && submitted" />
+            <span v-if="v$.grupo.$invalid && submitted">
+              <small class="text-red-500 block mt-1" v-for="error of v$.grupo.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </small>
+            </span>
+          </div>
+
+          <div>
+            <label for="nombre" class="block font-bold mb-3">Nombre</label>
+            <InputText id="nombre" v-model.trim="alimento.nombre" :required="true"
+              :invalid="v$.nombre.$invalid && submitted" />
+            <span v-if="v$.nombre.$invalid && submitted">
+              <small class="text-red-500 block mt-1" v-for="error of v$.nombre.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </small>
+            </span>
+          </div>
+
+          <div>
+            <label for="forma" class="block font-bold mb-3">Forma</label>
+            <InputText id="forma" v-model.trim="alimento.forma" />
+          </div>
+
+          <div>
+            <label for="momento" class="block font-bold mb-3">Momento</label>
+            <InputText id="momento" v-model.trim="alimento.momento" />
+          </div>
+
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-6">
+              <label for="ms" class="block font-bold mb-3">% MS</label>
+              <InputNumber id="ms" v-model="alimento.ms" :required="true" :invalid="v$.ms.$invalid && submitted" />
+              <span v-if="v$.ms.$invalid && submitted">
+                <small class="text-red-500 block mt-1" v-for="error of v$.ms.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+
+            <div class="col-span-6">
+              <label for="em" class="block font-bold mb-3">EM (Mcal)</label>
+              <InputNumber id="em" v-model="alimento.em" :required="true" :invalid="v$.em.$invalid && submitted" />
+              <span v-if="v$.em.$invalid && submitted">
+                <small class="text-red-500 block mt-1" v-for="error of v$.em.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-6">
+              <label for="pb" class="block font-bold mb-3">% PB</label>
+              <InputNumber id="pb" v-model="alimento.pb" :required="true" :invalid="v$.pb.$invalid && submitted" />
+              <span v-if="v$.pb.$invalid && submitted">
+                <small class="text-red-500 block mt-1" v-for="error of v$.pb.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+
+            <div class="col-span-6">
+              <label for="fdn" class="block font-bold mb-3">% FDN</label>
+              <InputNumber id="fdn" v-model="alimento.fdn" :required="true" :invalid="v$.fdn.$invalid && submitted" />
+              <span v-if="v$.fdn.$invalid && submitted">
+                <small class="text-red-500 block mt-1" v-for="error of v$.fdn.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-6">
+              <label for="calcio" class="block font-bold mb-3">Calcio</label>
+              <InputNumber id="calcio" v-model="alimento.calcio" :required="true"
+                :invalid="v$.calcio.$invalid && submitted" />
+              <span v-if="v$.calcio.$invalid && submitted">
+                <small class="text-red-500 block mt-1" v-for="error of v$.calcio.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+
+            <div class="col-span-6">
+              <label for="fosforo" class="block font-bold mb-3">Fósforo</label>
+              <InputNumber id="fosforo" v-model="alimento.fosforo" :required="true"
+                :invalid="v$.fosforo.$invalid && submitted" />
+              <span v-if="v$.fosforo.$invalid && submitted">
+                <small class="text-red-500 block mt-1" v-for="error of v$.fosforo.$errors" :key="error.$uid">
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+          </div>
+          <div>
+            <label for="precio" class="block font-bold mb-3">Precio</label>
+            <InputNumber id="precio" v-model="alimento.precio" :required="true"
+              :invalid="v$.precio.$invalid && submitted" />
+            <span v-if="v$.precio.$invalid && submitted">
+              <small class="text-red-500 block mt-1" v-for="error of v$.precio.$errors" :key="error.$uid">
+                {{ error.$message }}
+              </small>
+            </span>
+          </div>
+        </div>
+
+        <template #footer>
+          <Button label="Cancelar" icon="pi pi-times" class="p-button-text" @click="cerrarDialog" />
+          <Button label="Guardar" icon="pi pi-check" class="p-button-text" @click="guardarAlimento" />
+        </template>
+      </Dialog>
+
     </template>
   </Card>
 </template>
@@ -76,6 +170,7 @@ import { useToast } from 'primevue/usetoast'
 import { useVuelidate } from '@vuelidate/core'
 import { required, numeric, minValue, helpers } from '@vuelidate/validators'
 import { useConfirm } from 'primevue/useconfirm'
+import { Dialog } from 'primevue'
 
 // Extrae 'withMessage' de 'helpers' para usarlo fácilmente
 const { withMessage } = helpers
@@ -214,45 +309,50 @@ function editarItem(item) {
 }
 // Función para confirmar eliminación
 function confirmarEliminar(item) {
-  console.log('Botón "Eliminar" presionado para:', item.nombre)
-  // Mostrar confirmación antes de eliminar
   confirm.require({
     message: `¿Estás seguro de que deseas eliminar el alimento "${item.nombre}"?`,
     header: 'Confirmar Eliminación',
     icon: 'pi pi-exclamation-triangle',
     acceptClass: 'p-button-danger',
-    // Acción al aceptar
-    accept: () => {
-      // Lógica para eliminar el alimento
-      alimentosRaw.value = alimentosRaw.value.filter((a) => a.id !== item.id)
-      // Mostrar notificación de éxito
-      toast.add({
-        severity: 'success',
-        summary: 'Eliminado',
-        detail: `El alimento "${item.nombre}" ha sido eliminado.`,
-        life: 3000,
-      })
+    rejectProps: { label: 'Cancelar' },
+    acceptProps: { label: 'Eliminar' },
+
+    // Acción al aceptar (MODIFICADA)
+    accept: async () => { // <-- Convertida a 'async'
+      try {
+        // 1. Eliminar de la base de datos
+        await db.alimentos.delete(item.id) // <-- NUEVO
+
+        // 2. Actualizar el array local (tu lógica original)
+        alimentosRaw.value = alimentosRaw.value.filter((a) => a.id !== item.id)
+
+        toast.add({
+          severity: 'success',
+          summary: 'Eliminado',
+          detail: `El alimento "${item.nombre}" ha sido eliminado.`,
+          life: 3000,
+        })
+      } catch (error) { // <-- NUEVO (Manejo de errores)
+        console.error('Error al eliminar:', error)
+        toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo eliminar el alimento de la base de datos.',
+          life: 3000,
+        })
+      }
     },
-    // Acción al rechazar
     reject: () => {
       console.log('Eliminación cancelada.')
     },
   })
 }
-// Función para cerrar el diálogo
-function cerrarDialog() {
-  //Cerrar el diálogo
-  dialog.value = false
-  //Resetear el estado de envio
-  submitted.value = false
-}
-//Función para guardar el alimento (nuevo o editado)
+
+//Función para guardar el alimento (MODIFICADA)
 async function guardarAlimento() {
-  //Marcar que se ha intentado enviar el formulario
   submitted.value = true
-  //Validar el formulario
   const isValid = await v$.value.$validate()
-  //Si no es válido, mostrar mensaje de error y salir
+
   if (!isValid) {
     toast.add({
       severity: 'error',
@@ -262,42 +362,64 @@ async function guardarAlimento() {
     })
     return
   }
-  //Si es válido, proceder a guardar
-  console.log('Guardando alimento:', alimento)
-  if (alimento.id) {
-    // Lógica para actualizar un alimento existente
-    // Buscar el índice del alimento en el array
-    const index = alimentosRaw.value.findIndex((a) => a.id === alimento.id)
-    // Actualizar el alimento en el array
-    if (index !== -1) {
-      // Reemplazar el alimento en el array
-      alimentosRaw.value[index] = { ...alimento }
-      // Mostrar notificación de éxito
+
+  // Si es válido, proceder a guardar
+  try { // <-- NUEVO (Manejo de errores)
+    if (alimento.id) {
+      // --- Lógica de ACTUALIZAR ---
+
+      // 1. Crear una copia de los datos (sin reactividad)
+      const datosActualizados = { ...alimento } // <-- NUEVO
+
+      // 2. Actualizar en la base de datos
+      await db.alimentos.update(alimento.id, datosActualizados) // <-- NUEVO
+
+      // 3. Actualizar el array local (tu lógica original)
+      const index = alimentosRaw.value.findIndex((a) => a.id === alimento.id)
+      if (index !== -1) {
+        alimentosRaw.value[index] = datosActualizados // <-- Usamos la copia
+      }
+
       toast.add({
         severity: 'success',
         summary: 'Actualizado',
         detail: `El alimento "${alimento.nombre}" ha sido actualizado.`,
         life: 3000,
       })
+
+    } else {
+      // --- Lógica de CREAR ---
+
+      // 1. Preparar el nuevo objeto (sin el id nulo)
+      const nuevoAlimento = { ...alimento } // <-- NUEVO
+      delete nuevoAlimento.id // <-- NUEVO (Dejamos que Dexie genere el ID)
+
+      // 2. Agregar a la base de datos (Dexie devuelve el nuevo ID)
+      const nuevoId = await db.alimentos.add(nuevoAlimento) // <-- NUEVO
+
+      // 3. Agregar al array local (con el ID devuelto por la BBDD)
+      alimentosRaw.value.push({ ...nuevoAlimento, id: nuevoId }) // <-- MODIFICADO
+
+      toast.add({
+        severity: 'success',
+        summary: 'Agregado',
+        detail: `El alimento "${alimento.nombre}" ha sido agregado.`,
+        life: 3000,
+      })
     }
-  } else {
-    // Lógica para agregar un nuevo alimento
-    // Asignar un nuevo ID (simple incremento)
-    const nuevoId = alimentosRaw.value.length
-      ? Math.max(...alimentosRaw.value.map((a) => a.id)) + 1
-      : 1
-    // Agregar el nuevo alimento al array
-    alimentosRaw.value.push({ ...alimento, id: nuevoId })
-    // Mostrar notificación de éxito
+
+    // Cerrar el diálogo (solo si todo salió bien)
+    dialog.value = false
+
+  } catch (error) { // <-- NUEVO (Manejo de errores)
+    console.error('Error al guardar:', error)
     toast.add({
-      severity: 'success',
-      summary: 'Agregado',
-      detail: `El alimento "${alimento.nombre}" ha sido agregado.`,
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudo guardar el alimento en la base de datos.',
       life: 3000,
     })
   }
-  //Cerrar el diálogo
-  dialog.value = false
 }
 </script>
 

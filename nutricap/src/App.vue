@@ -36,7 +36,7 @@ import { RouterView, RouterLink } from 'vue-router'
 import { db } from './db' // Importamos Dexie
 import Papa from 'papaparse' // Importamos Papa Parse
 
-// --- 1. Lógica del Modo Oscuro ---
+// --- 1. Lógica del Modo Oscuro (Sin cambios) ---
 const isDarkMode = ref(false)
 function toggleDarkMode() {
   isDarkMode.value = !isDarkMode.value
@@ -51,7 +51,7 @@ function aplicarTemaGuardado() {
   }
 }
 
-// 1. Definimos los items del menú
+// --- 2. Items del menú (Sin cambios) ---
 const menuItems = ref([
   {
     label: 'Inicio',
@@ -70,7 +70,41 @@ const menuItems = ref([
   },
 ])
 
-// 2. LÓGICA DE CARGA DE DATOS (DEXIE)
+// --- 3. NUEVAS FUNCIONES DE LIMPIEZA ---
+// Las añadimos aquí mismo para usarlas en onMounted
+
+/**
+ * Convierte un texto a tipo Título (primera letra mayúscula).
+ * Limpia '****' y espacios.
+ */
+function capitalizar(texto) {
+  if (!texto) {
+    return ''; // Devuelve vacío si es null, undefined o ""
+  }
+  const textoLimpio = String(texto).trim();
+  if (textoLimpio === '****') {
+    return ''; // Maneja el caso específico de '****'
+  }
+  return textoLimpio.charAt(0).toUpperCase() + textoLimpio.slice(1).toLowerCase();
+}
+
+/**
+ * Convierte un valor (probablemente texto) a un número.
+ * - Reemplaza la coma (',') por un punto ('.').
+ * - Si el valor es vacío, nulo o no es un número, devuelve 0.
+ */
+function parsearNumero(valor) {
+  if (!valor) {
+    return 0; // Devuelve 0 para valores vacíos, null o undefined
+  }
+  const valorLimpio = String(valor).replace(',', '.');
+  const numero = parseFloat(valorLimpio);
+  
+  // Si parseFloat falla (ej. por "texto") o es vacío, devuelve 0
+  return isNaN(numero) ? 0 : numero;
+}
+
+// --- 4. LÓGICA DE CARGA DE DATOS (MODIFICADA) ---
 onMounted(() => {
   aplicarTemaGuardado()
   db.alimentos
@@ -81,37 +115,48 @@ onMounted(() => {
         return
       }
       console.log('Base de datos vacía, cargando alimentos desde CSV...')
-      fetch('/alimentos_mod.csv')
+      fetch('/alimentos_mod.csv') // Asumimos que está en la carpeta /public
         .then((response) => response.text())
-        // ... (el resto de tu lógica de carga de dexie)
         .then((csvText) => {
           Papa.parse(csvText, {
             header: true,
             delimiter: ';',
             skipEmptyLines: true,
-            dynamicTyping: true,
+            // dynamicTyping: false, <-- Quitamos esto. Es más seguro parsear manualmente.
+            
             complete: (results) => {
+              
+              // --- ¡AQUÍ APLICAMOS LA NUEVA LIMPIEZA! ---
               const alimentosLimpios = results.data
                 .map((item) => {
-                  Object.keys(item).forEach((key) => {
-                    const valor = item[key]
-                    if (valor === '****') item[key] = null
-                    else if (typeof valor === 'string') item[key] = valor.trim()
-                  })
-                  item.ms = parseFloat(String(item.ms).replace(',', '.')) || null
-                  item.em = parseFloat(String(item.em).replace(',', '.')) || null
-                  item.pb = parseFloat(String(item.pb).replace(',', '.')) || null
-                  item.fdn = parseFloat(String(item.fdn).replace(',', '.')) || null
-                  item.calcio = parseFloat(String(item.calcio).replace(',', '.')) || null
-                  item.fosforo = parseFloat(String(item.fosforo).replace(',', '.')) || null
-                  return item
+                  // Aplicamos nuestras funciones a cada campo
+                  return {
+                    grupo: capitalizar(item.grupo),
+                    nombre: capitalizar(item.nombre),
+                    forma: capitalizar(item.forma),
+                    momento: capitalizar(item.momento),
+                    
+                    ms: parsearNumero(item.ms),
+                    em: parsearNumero(item.em),
+                    pb: parsearNumero(item.pb),
+                    fdn: parsearNumero(item.fdn),
+                    calcio: parsearNumero(item.calcio),
+                    fosforo: parsearNumero(item.fosforo),
+                    precio: parsearNumero(item.precio),
+                  }
                 })
-                .filter((item) => item.nombre)
+                .filter((item) => item.nombre); // Filtramos los que no tienen nombre
 
+              // Guardamos en la BBDD
               db.alimentos.bulkAdd(alimentosLimpios).then(() => {
-                console.log(`${alimentosLimpios.length} alimentos cargados.`)
+                console.log(`${alimentosLimpios.length} alimentos limpios cargados.`);
+                // Recargamos la página para que la tabla vea los nuevos datos
+                window.location.reload();
               })
             },
+            error: (err) => {
+              console.error("Error de PapaParse:", err);
+            }
           })
         })
     })

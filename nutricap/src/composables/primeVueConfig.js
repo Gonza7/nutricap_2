@@ -21,7 +21,7 @@ import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmationService from 'primevue/confirmationservice'
-
+import InputNumber from 'primevue/inputnumber'
 const MyPreset = definePreset(Aura, {})
 const Noir = definePreset(Aura, {
   semantic: {
@@ -91,6 +91,7 @@ export const primeVueConfig = (app) => {
   app.component('Toast', Toast)
   app.component('Menubar', Menubar)
   app.component('InputText', InputText)
+  app.component('InputNumber', InputNumber)
   app.component('Dialog', Dialog)
   app.component('DataTable', DataTable)
   app.component('Column', Column)

@@ -22,6 +22,8 @@ import Row from 'primevue/row'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmationService from 'primevue/confirmationservice'
 import InputNumber from 'primevue/inputnumber'
+import FloatLabel from 'primevue/floatlabel'
+
 const MyPreset = definePreset(Aura, {})
 const Noir = definePreset(Aura, {
   semantic: {
@@ -98,6 +100,7 @@ export const primeVueConfig = (app) => {
   app.component('ColumnGroup', ColumnGroup)
   app.component('Row', Row)
   app.component('ConfirmDialog', ConfirmDialog)
+  app.component('FloatLabel', FloatLabel)
   app.use(ToastService)
   app.use(ConfirmationService)
 }

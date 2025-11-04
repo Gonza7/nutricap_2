@@ -421,7 +421,6 @@ import { useToast } from 'primevue/usetoast'
 import { useVuelidate } from '@vuelidate/core'
 import { required, numeric, minValue, helpers } from '@vuelidate/validators'
 import { useConfirm } from 'primevue/useconfirm'
-import { Dialog, FloatLabel } from 'primevue'
 
 // Extrae 'withMessage' de 'helpers' para usarlo fácilmente
 const { withMessage } = helpers

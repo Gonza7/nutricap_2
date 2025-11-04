@@ -68,6 +68,16 @@ const menuItems = ref([
     icon: 'pi pi-database',
     route: '/alimentos',
   },
+  {
+    label: 'Acerca de',
+    icon: 'pi pi-info-circle',
+    route: '/acerca-de',
+  },
+  {
+    label: 'Test',
+    icon: 'pi pi-cog',
+    route: '/test',
+  },
 ])
 
 // --- 3. NUEVAS FUNCIONES DE LIMPIEZA ---

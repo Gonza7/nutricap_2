@@ -39,118 +39,112 @@
         </Column>
         <template #empty> No se encontraron alimentos. </template>
       </DataTable>
-      <Dialog v-model:visible="dialog" :style="{ width: '450px' }" header="Detalles del alimento" :modal="true">
-
-        <div class="flex flex-col gap-6">
-
-          <div>
-            <label for="grupo" class="block font-bold mb-3">Grupo</label>
+      <Dialog v-model:visible="dialog" :style="{ width: '750px' }" header="Detalles del alimento" :modal="true">
+        <div class="flex-wrap justify-center items-end gap-4">
+          <FloatLabel variant="in" class="mb-1">
             <InputText id="grupo" v-model.trim="alimento.grupo" :required="true"
-              :invalid="v$.grupo.$invalid && submitted" />
-            <span v-if="v$.grupo.$invalid && submitted">
-              <small class="text-red-500 block mt-1" v-for="error of v$.grupo.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </small>
-            </span>
-          </div>
+              :invalid="v$.grupo.$invalid && submitted" fluid />
+            <label for="grupo">Grupo</label>
+          </FloatLabel>
+          <span v-if="v$.grupo.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.grupo.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
 
-          <div>
-            <label for="nombre" class="block font-bold mb-3">Nombre</label>
+          <FloatLabel variant="in" class="mb-1">
             <InputText id="nombre" v-model.trim="alimento.nombre" :required="true"
-              :invalid="v$.nombre.$invalid && submitted" />
-            <span v-if="v$.nombre.$invalid && submitted">
-              <small class="text-red-500 block mt-1" v-for="error of v$.nombre.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </small>
-            </span>
-          </div>
+              :invalid="v$.nombre.$invalid && submitted" fluid />
+            <label for="nombre">Nombre</label>
+          </FloatLabel>
+          <span v-if="v$.nombre.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.nombre.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
 
-          <div>
-            <label for="forma" class="block font-bold mb-3">Forma</label>
-            <InputText id="forma" v-model.trim="alimento.forma" />
-          </div>
+          <FloatLabel variant="in" class="mb-1">
+            <InputText id="forma" v-model.trim="alimento.forma" fluid />
+            <label for="forma">Forma</label>
+          </FloatLabel>
 
-          <div>
-            <label for="momento" class="block font-bold mb-3">Momento</label>
-            <InputText id="momento" v-model.trim="alimento.momento" />
-          </div>
+          <FloatLabel variant="in" class="mb-1">
+            <InputText id="momento" v-model.trim="alimento.momento" fluid />
+            <label for="momento">Momento</label>
+          </FloatLabel>
 
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-6">
-              <label for="ms" class="block font-bold mb-3">% MS</label>
-              <InputNumber id="ms" v-model="alimento.ms" :required="true" :invalid="v$.ms.$invalid && submitted" />
-              <span v-if="v$.ms.$invalid && submitted">
-                <small class="text-red-500 block mt-1" v-for="error of v$.ms.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </small>
-              </span>
-            </div>
+          <FloatLabel variant="in" class="mb-1">
+            <InputNumber id="ms" v-model="alimento.ms" :required="true" :invalid="v$.ms.$invalid && submitted" />
+            <label for="ms">% MS</label>
+          </FloatLabel>
+          <span v-if="v$.ms.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.ms.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
 
-            <div class="col-span-6">
-              <label for="em" class="block font-bold mb-3">EM (Mcal)</label>
-              <InputNumber id="em" v-model="alimento.em" :required="true" :invalid="v$.em.$invalid && submitted" />
-              <span v-if="v$.em.$invalid && submitted">
-                <small class="text-red-500 block mt-1" v-for="error of v$.em.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </small>
-              </span>
-            </div>
-          </div>
+          <FloatLabel variant="in" class="mb-1">
+            <InputNumber id="em" v-model="alimento.em" :required="true" :invalid="v$.em.$invalid && submitted" />
+            <label for="em">EM (Mcal)</label>
+          </FloatLabel>
+          <span v-if="v$.em.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.em.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
 
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-6">
-              <label for="pb" class="block font-bold mb-3">% PB</label>
-              <InputNumber id="pb" v-model="alimento.pb" :required="true" :invalid="v$.pb.$invalid && submitted" />
-              <span v-if="v$.pb.$invalid && submitted">
-                <small class="text-red-500 block mt-1" v-for="error of v$.pb.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </small>
-              </span>
-            </div>
+          <FloatLabel variant="in" class="mb-1">
+            <InputNumber id="pb" v-model="alimento.pb" :required="true" :invalid="v$.pb.$invalid && submitted" />
+            <label for="pb">% PB</label>
+          </FloatLabel>
+          <span v-if="v$.pb.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.pb.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
 
-            <div class="col-span-6">
-              <label for="fdn" class="block font-bold mb-3">% FDN</label>
-              <InputNumber id="fdn" v-model="alimento.fdn" :required="true" :invalid="v$.fdn.$invalid && submitted" />
-              <span v-if="v$.fdn.$invalid && submitted">
-                <small class="text-red-500 block mt-1" v-for="error of v$.fdn.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </small>
-              </span>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-6">
-              <label for="calcio" class="block font-bold mb-3">Calcio</label>
-              <InputNumber id="calcio" v-model="alimento.calcio" :required="true"
-                :invalid="v$.calcio.$invalid && submitted" />
-              <span v-if="v$.calcio.$invalid && submitted">
-                <small class="text-red-500 block mt-1" v-for="error of v$.calcio.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </small>
-              </span>
-            </div>
+          <FloatLabel variant="in" class="mb-1">
+            <InputNumber id="fdn" v-model="alimento.fdn" :required="true" :invalid="v$.fdn.$invalid && submitted" />
+            <label for="fdn">% FDN</label>
+          </FloatLabel>
+          <span v-if="v$.fdn.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.fdn.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
 
-            <div class="col-span-6">
-              <label for="fosforo" class="block font-bold mb-3">Fósforo</label>
-              <InputNumber id="fosforo" v-model="alimento.fosforo" :required="true"
-                :invalid="v$.fosforo.$invalid && submitted" />
-              <span v-if="v$.fosforo.$invalid && submitted">
-                <small class="text-red-500 block mt-1" v-for="error of v$.fosforo.$errors" :key="error.$uid">
-                  {{ error.$message }}
-                </small>
-              </span>
-            </div>
-          </div>
-          <div>
-            <label for="precio" class="block font-bold mb-3">Precio</label>
+          <FloatLabel variant="in" class="mb-1">
+            <InputNumber id="calcio" v-model="alimento.calcio" :required="true"
+              :invalid="v$.calcio.$invalid && submitted" />
+            <label for="calcio">Calcio</label>
+          </FloatLabel>
+          <span v-if="v$.calcio.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.calcio.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
+
+          <FloatLabel variant="in" class="mb-1">
+            <InputNumber id="fosforo" v-model="alimento.fosforo" :required="true"
+              :invalid="v$.fosforo.$invalid && submitted" />
+            <label for="fosforo">Fósforo</label>
+          </FloatLabel>
+          <span v-if="v$.fosforo.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.fosforo.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
+
+          <FloatLabel variant="in" class="mb-1">
             <InputNumber id="precio" v-model="alimento.precio" :required="true"
-              :invalid="v$.precio.$invalid && submitted" />
-            <span v-if="v$.precio.$invalid && submitted">
-              <small class="text-red-500 block mt-1" v-for="error of v$.precio.$errors" :key="error.$uid">
-                {{ error.$message }}
-              </small>
-            </span>
-          </div>
+              :invalid="v$.precio.$invalid && submitted" fluid />
+            <label for="precio">Precio</label>
+          </FloatLabel>
+          <span v-if="v$.precio.$invalid && submitted">
+            <small class="text-red-500 block mb-1" v-for="error of v$.precio.$errors" :key="error.$uid">
+              {{ error.$message }}
+            </small>
+          </span>
         </div>
 
         <template #footer>
@@ -170,7 +164,7 @@ import { useToast } from 'primevue/usetoast'
 import { useVuelidate } from '@vuelidate/core'
 import { required, numeric, minValue, helpers } from '@vuelidate/validators'
 import { useConfirm } from 'primevue/useconfirm'
-import { Dialog } from 'primevue'
+import { Dialog, FloatLabel } from 'primevue'
 
 // Extrae 'withMessage' de 'helpers' para usarlo fácilmente
 const { withMessage } = helpers
@@ -296,6 +290,11 @@ function abrirDialogNuevo() {
   submitted.value = false
   //Abrir el dialogo
   dialog.value = true
+}
+
+// Función para cerrar el diálogo
+function cerrarDialog() {
+  dialog.value = false
 }
 // Función para abrir el diálogo para editar un item
 function editarItem(item) {

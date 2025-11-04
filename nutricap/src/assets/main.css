@@ -3,24 +3,142 @@
 /* 1. Resetea los estilos por defecto del navegador.
   2. Aplica la fuente Inter a toda la app.
 */
-body {
+/*body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: Arial, 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
   /* Colores del tema (PrimeVue los controlará) */
-  background-color: var(--p-surface-ground);
+/*background-color: var(--p-surface-ground);
   color: var(--p-text-color);
-}
+}*/
 
 /* Resetea #app para que no esté centrada 
   (como en la demo de Vite) 
 */
-#app {
+/*#app {
   max-width: none;
   margin: 0;
   padding: 0;
   text-align: left;
+}*/
+/* src/assets/main.css */
+@font-face {
+  font-family: 'Inclusive Sans'; /* Nombre que usarás en CSS */
+  src: url('./fonts/InclusiveSans-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal; /* Define el peso si es una fuente regular */
+  font-style: normal; /* Define el estilo (normal, italic, etc.) */
+}
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Inclusive Sans', Arial, Helvetica, sans-serif;
+}
+
+/* ============================
+   Ajustes para Toasts (PrimeVue)
+   ============================ */
+
+/* Asegurá un z-index alto para que esté por encima de todo */
+.p-toast {
+  z-index: 9999;
+  box-sizing: border-box;
+}
+
+/* Estilos generales para que el toast no quede pegado al borde en móviles.
+   Toma máxima anchura menos márgenes laterales y evita transformaciones raras.
+*/
+@media (max-width: 768px) {
+  /* Para cualquier toast posicionado arriba/derecha/izquierda/centro */
+  .p-toast.p-toast-top-right,
+  .p-toast.p-toast-top-left,
+  .p-toast.p-toast-top-center,
+  .p-toast.p-toast-bottom-right,
+  .p-toast.p-toast-bottom-left,
+  .p-toast.p-toast-bottom-center {
+    left: 50% !important; /* centrar horizontal */
+    transform: translateX(-50%) !important;
+    right: auto !important; /* anula posicionamientos previos */
+    max-width: calc(100% - 2rem) !important; /* dejar 1rem de margen a cada lado */
+    width: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Hacer que cada mensaje dentro del toast use todo el ancho disponible (mejor lectura en móvil) */
+  .p-toast .p-toast-message {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Opcional: bajar un poco el top si tenés una barra fija (ajustá 3.5rem) */
+  .p-toast-top-center {
+    top: 3.5rem !important;
+  }
+}
+
+/* Desktop: mantener comportamiento por defecto (top-right),
+   pero limitar ancho máximo para que no sea gigante en pantallas anchas. */
+@media (min-width: 769px) {
+  .p-toast {
+    max-width: 420px; /* ajustá a tu gusto */
+  }
+}
+
+/* ============================
+   Utilidades para separación entre elementos
+   ============================ */
+
+/* Grupo inline con gap (ideal para botones y elementos que estén juntos) */
+.inline-gap {
+  display: inline-flex; /* usa inline-flex si lo querés en línea */
+  align-items: center;
+  gap: 0.5rem; /* espacio entre hijos (soporta navegadores modernos) */
+}
+
+/* Backup para navegadores sin soporte gap en inline-flex */
+.inline-gap > * + * {
+  margin-left: 0.5rem;
+}
+
+/* Grupo flex que ocupa toda la línea pero mantiene gap */
+.flex-gap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.flex-gap > * + * {
+  margin-left: 0.5rem;
+}
+
+/* Si usás primeflex y ves clases como .gap-2 que no funcionan,
+   podés usar estas utilidades directamente en el HTML: */
+
+.filtros-tabla {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem; /* espacio entre los filtros */
+  flex-wrap: wrap; /* permite que bajen si no hay espacio */
+  margin-bottom: 0.5rem;
+}
+
+/* Input general: que no se achiquen demasiado */
+.filtros-tabla .p-inputtext {
+  min-width: 180px;
+}
+
+/* 💡 Responsive: cuando la pantalla es chica, los filtros se apilan */
+@media (max-width: 768px) {
+  .filtros-tabla {
+    justify-content: center; /* centrado en móvil */
+    flex-direction: column; /* uno debajo del otro */
+    align-items: stretch; /* que ocupen todo el ancho */
+    gap: 0.5rem;
+  }
+
+  .filtros-tabla .p-inputtext {
+    width: 100%; /* que se adapten al ancho del contenedor */
+  }
 }

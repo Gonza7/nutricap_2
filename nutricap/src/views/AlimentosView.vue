@@ -8,8 +8,18 @@
     </template>
 
     <template #content>
-      <DataTable :value="alimentos" :loading="loading" paginator :rows="15" :rowsPerPageOptions="[10, 15, 30, 50]"
-        removableSort stripedRows size="small" tableStyle="min-width: 50rem" dataKey="id">
+      <DataTable
+        :value="alimentos"
+        :loading="loading"
+        paginator
+        :rows="15"
+        :rowsPerPageOptions="[10, 15, 30, 50]"
+        removableSort
+        stripedRows
+        size="small"
+        tableStyle="min-width: 50rem"
+        dataKey="id"
+      >
         <template #header>
           <div class="filtros-tabla">
             <InputText v-model="filtroGrupo" placeholder="Filtrar por Grupo" />
@@ -27,21 +37,265 @@
         <Column field="fdn" header="% FDN" sortable></Column>
         <Column field="calcio" header="Calcio" sortable></Column>
         <Column field="fosforo" header="Fósforo" sortable></Column>
-        <Column field="precio" header="Precio" sortable></Column>
+        <Column field="precio" header="Precio" sortable
+          ><template #body="slotProps">
+            {{ formatPrice(slotProps.data.precio) }}
+          </template></Column
+        >
 
-        <Column header="Acciones" :exportable="false" style="min-width: 8rem" frozen alignFrozen="right">
+        <Column
+          header="Acciones"
+          :exportable="false"
+          style="min-width: 8rem"
+          frozen
+          alignFrozen="right"
+        >
           <template #body="slotProps">
-            <Button icon="pi pi-pencil" variant="text" severity="contrast" class="p-button p-button mr-2"
-              @click="editarItem(slotProps.data)" />
-            <Button icon="pi pi-trash" variant="text" severity="danger" class="p-button p-button"
-              @click="confirmarEliminar(slotProps.data)" />
+            <Button
+              icon="pi pi-pencil"
+              variant="text"
+              severity="contrast"
+              class="p-button p-button mr-2"
+              @click="editarItem(slotProps.data)"
+            />
+            <Button
+              icon="pi pi-trash"
+              variant="text"
+              severity="danger"
+              class="p-button p-button"
+              @click="confirmarEliminar(slotProps.data)"
+            />
           </template>
         </Column>
         <template #empty> No se encontraron alimentos. </template>
       </DataTable>
-      <Dialog v-model:visible="dialog" :style="{ width: '750px' }" header="Detalles del alimento" :modal="true">
-        <div class="flex-wrap justify-center items-end gap-4">
-          <FloatLabel variant="in" class="mb-1">
+      <Dialog
+        v-model:visible="dialog"
+        :style="{ width: '90vw', maxWidth: '600px' }"
+        header="Detalles del alimento"
+        :modal="true"
+      >
+        <!-- Grupo -->
+        <div class="flex flex-wrap gap-4 items-end mt-1">
+          <div class="w-full">
+            <FloatLabel variant="on" class="w-full mb-1">
+              <InputText
+                id="grupo"
+                v-model.trim="alimento.grupo"
+                :required="true"
+                :invalid="v$.grupo.$invalid && submitted"
+                class="w-full"
+              />
+              <label for="grupo">Grupo</label>
+            </FloatLabel>
+            <span v-if="v$.grupo.$invalid && submitted">
+              <small
+                class="text-red-500 block mb-1"
+                v-for="error of v$.grupo.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </small>
+            </span>
+          </div>
+          <!-- Nombre -->
+          <div class="w-full">
+            <FloatLabel variant="on" class="w-full mb-1">
+              <InputText
+                id="nombre"
+                v-model.trim="alimento.nombre"
+                :required="true"
+                :invalid="v$.nombre.$invalid && submitted"
+                class="w-full"
+              />
+              <label for="nombre">Nombre</label>
+            </FloatLabel>
+            <span v-if="v$.nombre.$invalid && submitted">
+              <small
+                class="text-red-500 block mb-1"
+                v-for="error of v$.nombre.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </small>
+            </span>
+          </div>
+          <!-- Forma fisica -->
+          <div class="w-full">
+            <FloatLabel variant="on" class="w-full mb-1">
+              <InputText id="forma" v-model.trim="alimento.forma" class="w-full" />
+              <label for="forma">Forma física</label>
+            </FloatLabel>
+          </div>
+          <!-- Momento -->
+          <div class="w-full">
+            <FloatLabel variant="on" class="w-full mb-1">
+              <InputText id="momento" v-model.trim="alimento.momento" class="w-full" />
+              <label for="momento">Momento</label>
+            </FloatLabel>
+          </div>
+          <!-- MS y EM en fila -->
+          <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="flex-1 min-w-0">
+              <FloatLabel variant="on" class="w-full mb-1">
+                <InputNumber
+                  id="ms"
+                  v-model="alimento.ms"
+                  :required="true"
+                  :invalid="v$.ms.$invalid && submitted"
+                  class="w-full"
+                />
+                <label for="ms">% MS</label>
+              </FloatLabel>
+              <span v-if="v$.ms.$invalid && submitted">
+                <small
+                  class="text-red-500 block mb-1"
+                  v-for="error of v$.ms.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <FloatLabel variant="on" class="w-full mb-1">
+                <InputNumber
+                  id="em"
+                  v-model="alimento.em"
+                  :required="true"
+                  :invalid="v$.em.$invalid && submitted"
+                  class="w-full"
+                />
+                <label for="em">EM (Mcal)</label>
+              </FloatLabel>
+              <span v-if="v$.em.$invalid && submitted">
+                <small
+                  class="text-red-500 block mb-1"
+                  v-for="error of v$.em.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+          </div>
+          <!-- PB y FDN en fila -->
+          <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="flex-1 min-w-0">
+              <FloatLabel variant="on" class="w-full mb-1">
+                <InputNumber
+                  id="pb"
+                  v-model="alimento.pb"
+                  :required="true"
+                  :invalid="v$.pb.$invalid && submitted"
+                  class="w-full"
+                />
+                <label for="pb">% PB</label>
+              </FloatLabel>
+              <span v-if="v$.pb.$invalid && submitted">
+                <small
+                  class="text-red-500 block mb-1"
+                  v-for="error of v$.pb.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <FloatLabel variant="on" class="w-full mb-1">
+                <InputNumber
+                  id="fdn"
+                  v-model="alimento.fdn"
+                  :required="true"
+                  :invalid="v$.fdn.$invalid && submitted"
+                  class="w-full"
+                />
+                <label for="fdn">% FDN</label>
+              </FloatLabel>
+              <span v-if="v$.fdn.$invalid && submitted">
+                <small
+                  class="text-red-500 block mb-1"
+                  v-for="error of v$.fdn.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+          </div>
+          <!-- Calcio y Fosforo en fila -->
+          <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="flex-1 min-w-0">
+              <FloatLabel variant="on" class="w-full mb-1">
+                <InputNumber
+                  id="calcio"
+                  v-model="alimento.calcio"
+                  :required="true"
+                  :invalid="v$.calcio.$invalid && submitted"
+                  class="w-full"
+                />
+                <label for="calcio">Calcio</label>
+              </FloatLabel>
+              <span v-if="v$.calcio.$invalid && submitted">
+                <small
+                  class="text-red-500 block mb-1"
+                  v-for="error of v$.calcio.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <FloatLabel variant="on" class="w-full mb-1">
+                <InputNumber
+                  id="fosforo"
+                  v-model="alimento.fosforo"
+                  :required="true"
+                  :invalid="v$.fosforo.$invalid && submitted"
+                  class="w-full"
+                />
+                <label for="fosforo">Fósforo</label>
+              </FloatLabel>
+              <span v-if="v$.fosforo.$invalid && submitted">
+                <small
+                  class="text-red-500 block mb-1"
+                  v-for="error of v$.fosforo.$errors"
+                  :key="error.$uid"
+                >
+                  {{ error.$message }}
+                </small>
+              </span>
+            </div>
+          </div>
+          <!-- Precio -->
+          <div class="w-full">
+            <FloatLabel variant="on" class="w-full mb-1">
+              <InputNumber
+                id="precio"
+                v-model="alimento.precio"
+                :required="true"
+                :invalid="v$.precio.$invalid && submitted"
+                class="w-full"
+                mode="currency"
+                currency="ARS"
+                locale="es-AR"
+              />
+              <label for="precio">Precio</label>
+            </FloatLabel>
+            <span v-if="v$.precio.$invalid && submitted">
+              <small
+                class="text-red-500 block mb-1"
+                v-for="error of v$.precio.$errors"
+                :key="error.$uid"
+              >
+                {{ error.$message }}
+              </small>
+            </span>
+          </div>
+        </div>
+        <!-- <FloatLabel variant="in" class="mb-1">
             <InputText id="grupo" v-model.trim="alimento.grupo" :required="true"
               :invalid="v$.grupo.$invalid && submitted" fluid />
             <label for="grupo">Grupo</label>
@@ -144,15 +398,18 @@
             <small class="text-red-500 block mb-1" v-for="error of v$.precio.$errors" :key="error.$uid">
               {{ error.$message }}
             </small>
-          </span>
-        </div>
+          </span> -->
 
         <template #footer>
           <Button label="Cancelar" icon="pi pi-times" class="p-button-text" @click="cerrarDialog" />
-          <Button label="Guardar" icon="pi pi-check" class="p-button-text" @click="guardarAlimento" />
+          <Button
+            label="Guardar"
+            icon="pi pi-check"
+            class="p-button-text"
+            @click="guardarAlimento"
+          />
         </template>
       </Dialog>
-
     </template>
   </Card>
 </template>
@@ -317,7 +574,8 @@ function confirmarEliminar(item) {
     acceptProps: { label: 'Eliminar' },
 
     // Acción al aceptar (MODIFICADA)
-    accept: async () => { // <-- Convertida a 'async'
+    accept: async () => {
+      // <-- Convertida a 'async'
       try {
         // 1. Eliminar de la base de datos
         await db.alimentos.delete(item.id) // <-- NUEVO
@@ -331,7 +589,8 @@ function confirmarEliminar(item) {
           detail: `El alimento "${item.nombre}" ha sido eliminado.`,
           life: 3000,
         })
-      } catch (error) { // <-- NUEVO (Manejo de errores)
+      } catch (error) {
+        // <-- NUEVO (Manejo de errores)
         console.error('Error al eliminar:', error)
         toast.add({
           severity: 'error',
@@ -363,7 +622,8 @@ async function guardarAlimento() {
   }
 
   // Si es válido, proceder a guardar
-  try { // <-- NUEVO (Manejo de errores)
+  try {
+    // <-- NUEVO (Manejo de errores)
     if (alimento.id) {
       // --- Lógica de ACTUALIZAR ---
 
@@ -385,7 +645,6 @@ async function guardarAlimento() {
         detail: `El alimento "${alimento.nombre}" ha sido actualizado.`,
         life: 3000,
       })
-
     } else {
       // --- Lógica de CREAR ---
 
@@ -409,8 +668,8 @@ async function guardarAlimento() {
 
     // Cerrar el diálogo (solo si todo salió bien)
     dialog.value = false
-
-  } catch (error) { // <-- NUEVO (Manejo de errores)
+  } catch (error) {
+    // <-- NUEVO (Manejo de errores)
     console.error('Error al guardar:', error)
     toast.add({
       severity: 'error',
@@ -419,6 +678,14 @@ async function guardarAlimento() {
       life: 3000,
     })
   }
+}
+
+const formatPrice = (value) => {
+  if (value == null) return ''
+  return value.toLocaleString('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+  })
 }
 </script>
 

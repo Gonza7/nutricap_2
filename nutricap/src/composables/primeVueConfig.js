@@ -82,7 +82,7 @@ export const primeVueConfig = (app) => {
       },
     },
   })
-  const customPalette = palette('{green}')
+  const customPalette = palette('{zinc}')
 
   updatePrimaryPalette(customPalette)
 

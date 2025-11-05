@@ -23,7 +23,7 @@
     </Menubar>
   </header>
 
-  <main class="flex-grow w-full mx-auto p-4">
+  <main class="grow w-full mx-auto p-4">
     <Toast />
     <ConfirmDialog />
     <RouterView />
@@ -71,7 +71,7 @@ const menuItems = ref([
   {
     label: 'Acerca de',
     icon: 'pi pi-info-circle',
-    route: '/acerca-de',
+    route: '/about',
   },
   {
     label: 'Test',

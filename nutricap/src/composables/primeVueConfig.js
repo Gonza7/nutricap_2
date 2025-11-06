@@ -24,7 +24,7 @@ import ConfirmationService from 'primevue/confirmationservice'
 import InputNumber from 'primevue/inputnumber'
 import FloatLabel from 'primevue/floatlabel'
 import Fieldset from 'primevue/fieldset'
-
+import AutoComplete from 'primevue/autocomplete'
 const MyPreset = definePreset(Aura, {})
 const Noir = definePreset(Aura, {
   semantic: {
@@ -103,6 +103,7 @@ export const primeVueConfig = (app) => {
   app.component('ConfirmDialog', ConfirmDialog)
   app.component('FloatLabel', FloatLabel)
   app.component('Fieldset', Fieldset)
+  app.component('AutoComplete', AutoComplete)
   app.use(ToastService)
   app.use(ConfirmationService)
 }

@@ -1,16 +1,17 @@
 <template>
   <div class="min-h-screen p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-    <Card class="">
+    <Card class="md:col-start-1 md:row-start-1">
       <template #title>Datos del animal</template>
       <template #content>
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-6 overflow-y-auto">
 
           <Fieldset legend="Datos básicos">
             <div class="grid grid-cols-1 2xl:grid-cols-3 gap-4 pt-2">
 
-              <div class="flex flex-col gap-2">
+              <div class="flex flex-col gap-2 min-w-0">
                 <FloatLabel variant="on">
-                  <InputNumber id="pVivo" v-model="form.pVivo" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="pVivo" v-model="form.pVivo" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="pVivo">Peso vivo (kg)</label>
                 </FloatLabel>
                 <span v-if="v$.pVivo.$invalid && submitted">
@@ -20,9 +21,10 @@
                 </span>
               </div>
 
-              <div class="flex flex-col gap-2">
+              <div class="flex flex-col gap-2 min-w-0">
                 <FloatLabel variant="on">
-                  <InputNumber id="gButirosa" v-model="form.gButirosa" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="gButirosa" v-model="form.gButirosa" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="gButirosa">Grasa butirosa (%)</label>
                 </FloatLabel>
                 <span v-if="v$.gButirosa.$invalid && submitted">
@@ -32,9 +34,10 @@
                 </span>
               </div>
 
-              <div class="flex flex-col gap-2">
+              <div class="flex flex-col gap-2 min-w-0">
                 <FloatLabel variant="on">
-                  <InputNumber id="ltDiarios" v-model="form.ltDiarios" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="ltDiarios" v-model="form.ltDiarios" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="ltDiarios">Litros de leche (diarios)</label>
                 </FloatLabel>
                 <span v-if="v$.ltDiarios.$invalid && submitted">
@@ -51,7 +54,8 @@
 
               <div class="flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber id="actVoluntaria" v-model="form.actVoluntaria" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="actVoluntaria" v-model="form.actVoluntaria" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="actVoluntaria">Actividad voluntaria</label>
                 </FloatLabel>
                 <span v-if="v$.actVoluntaria.$invalid && submitted">
@@ -63,7 +67,8 @@
 
               <div class="flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber id="actReproductiva" v-model="form.actReproductiva" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="actReproductiva" v-model="form.actReproductiva" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="actReproductiva">Actividad reproductiva</label>
                 </FloatLabel>
                 <span v-if="v$.actReproductiva.$invalid && submitted">
@@ -80,7 +85,8 @@
 
               <div class="flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber id="gdpv" v-model="form.gdpv" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="gdpv" v-model="form.gdpv" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="gdpv">Ganancia diaria peso vivo (GDPV)</label>
                 </FloatLabel>
                 <span v-if="v$.gdpv.$invalid && submitted">
@@ -92,7 +98,8 @@
 
               <div class="flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber id="pdpv" v-model="form.pdpv" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="pdpv" v-model="form.pdpv" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="pdpv">Pérdida diaria peso vivo (PDPV)</label>
                 </FloatLabel>
                 <span v-if="v$.pdpv.$invalid && submitted">
@@ -109,7 +116,8 @@
 
               <div class="flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber id="penc" v-model="form.penc" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="penc" v-model="form.penc" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="penc">Peso nacimiento cría (Kg)</label>
                 </FloatLabel>
                 <span v-if="v$.penc.$invalid && submitted">
@@ -121,7 +129,7 @@
 
               <div class="flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber id="nc" v-model="form.nc" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="nc" v-model="form.nc" class="w-full" :minFractionDigits="0" :maxFractionDigits="2" />
                   <label for="nc">Número de crías</label>
                 </FloatLabel>
                 <span v-if="v$.nc.$invalid && submitted">
@@ -133,7 +141,8 @@
 
               <div class="flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber id="dGestacion" v-model="form.dGestacion" class="w-full" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber id="dGestacion" v-model="form.dGestacion" class="w-full" :minFractionDigits="0"
+                    :maxFractionDigits="2" />
                   <label for="dGestacion">Días de gestación</label>
                 </FloatLabel>
                 <span v-if="v$.dGestacion.$invalid && submitted">
@@ -148,36 +157,12 @@
         </div>
       </template>
     </Card>
-    <Card class="h-fit">
-      <template #title>Calcular Resultados</template>
-      <template #content>
-        <div class="flex flex-col gap-6">
-
-          <div class="border-t pt-4">
-            <Button @click="calcular" label="Calcular" icon="pi pi-calculator" class="w-full p-button-lg" />
-          </div>
-
-        </div>
-      </template>
-    </Card>
-    <Card class="md:col-start-2 md:row-start-1 md:row-span-3">
-      <template #title>Datos de la alimentacion</template>
-      <template #content>
-        <p class="m-0">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam
-          deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
-          neque
-          quas!
-        </p>
-      </template>
-    </Card>
-
-    <Card class="">
+    <Card class="md:col-start-1 md:row-start-2">
       <template #title>Datos de la alimentación</template>
       <template #content>
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-6 overflow-y-auto">
 
-          <Fieldset legend="Añadir Alimento">
+          <Fieldset legend=" Añadir Alimento">
             <div class="flex flex-wrap flex-col md:flex-row gap-4 md:items-end">
 
               <div class="flex-1 flex flex-col gap-2 min-w-48">
@@ -207,9 +192,9 @@
                 </FloatLabel>
               </div>
 
-              <div class="flex-shrink-0 flex flex-col gap-2">
+              <div class="shrink-0 flex flex-col gap-2">
                 <FloatLabel variant="on">
-                  <InputNumber v-model="mtcSeleccionado" id="mtc" :minFractionDigits="0" :maxFractionDigits="2"/>
+                  <InputNumber v-model="mtcSeleccionado" id="mtc" :minFractionDigits="0" :maxFractionDigits="2" />
                   <label for="mtc">MTC (kg)</label>
                 </FloatLabel>
               </div>
@@ -274,7 +259,176 @@
         </div>
       </template>
     </Card>
+    <div class="flex flex-col gap-4 md:col-start-2 md:row-start-1 md:row-span-2 min-h-0">
+      <Card class="h-fit shrink-0">
+        <template #title>Calcular Resultados</template>
+        <template #content>
+          <div class="flex flex-col gap-6">
 
+            <div class="border-t pt-4">
+              <Button @click="calcular" label="Calcular" icon="pi pi-calculator" class="w-full p-button-lg" />
+            </div>
+
+          </div>
+        </template>
+      </Card>
+      <Card class="flex-1 min-h-0">
+        <template #title>Resultados del Cálculo</template>
+        <template #content class="h-full">
+          <div class="flex flex-col gap-6 h-full overflow-y-auto">
+
+            <Fieldset legend="Balances" :toggleable="false">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+
+                <FloatLabel variant="on">
+                  <InputText id="res-bal-pb" :modelValue="mostrarValor(resultados.balancePb)"
+                    :style="getBalanceStyle(resultados.balancePb)" class="w-full font-bold" readonly />
+                  <label for="res-bal-pb">Balance PB (g)</label>
+                </FloatLabel>
+
+                <FloatLabel variant="on">
+                  <InputText id="res-bal-em" :modelValue="mostrarValor(resultados.balanceEm)"
+                    :style="getBalanceStyle(resultados.balanceEm)" class="w-full font-bold" readonly />
+                  <label for="res-bal-em">Balance EM (Mcal)</label>
+                </FloatLabel>
+
+                <FloatLabel variant="on">
+                  <InputText id="res-bal-ca" :modelValue="mostrarValor(resultados.balanceCa)"
+                    :style="getBalanceStyle(resultados.balanceCa)" class="w-full font-bold" readonly />
+                  <label for="res-bal-ca">Balance Calcio (g)</label>
+                </FloatLabel>
+
+                <FloatLabel variant="on">
+                  <InputText id="res-bal-p" :modelValue="mostrarValor(resultados.balanceP)"
+                    :style="getBalanceStyle(resultados.balanceP)" class="w-full font-bold" readonly />
+                  <label for="res-bal-p">Balance Fósforo (g)</label>
+                </FloatLabel>
+
+                <FloatLabel variant="on">
+                  <InputText id="res-bal-fdn" :modelValue="mostrarValor(resultados.balanceFdn)"
+                    :style="getBalanceStyle(resultados.balanceFdn)" class="w-full font-bold" readonly />
+                  <label for="res-bal-fdn">Balance FDN (% MS)</label>
+                </FloatLabel>
+
+              </div>
+            </Fieldset>
+
+            <Fieldset legend="Aportes de la Ración">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-mtc" :modelValue="mostrarValor(resultados.sumaMtc)" class="w-full" readonly />
+                  <label for="res-ap-mtc">MTC Total (kg)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-ms" :modelValue="mostrarValor(resultados.sumaMs)" class="w-full" readonly />
+                  <label for="res-ap-ms">MS Total (kg)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-pb" :modelValue="mostrarValor(resultados.sumaPb)" class="w-full" readonly />
+                  <label for="res-ap-pb">PB Total (g)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-em" :modelValue="mostrarValor(resultados.sumaEm)" class="w-full" readonly />
+                  <label for="res-ap-em">EM Total (Mcal)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-ca" :modelValue="mostrarValor(resultados.sumaCa)" class="w-full" readonly />
+                  <label for="res-ap-ca">Ca Total (g)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-p" :modelValue="mostrarValor(resultados.sumaP)" class="w-full" readonly />
+                  <label for="res-ap-p">P Total (g)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-fdn" :modelValue="mostrarValor(resultados.sumaFdn)" class="w-full" readonly />
+                  <label for="res-ap-fdn">FDN Total (% MS)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-cap" :modelValue="mostrarValor(resultados.caP)" class="w-full" readonly />
+                  <label for="res-ap-cap">Relación Ca:P</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-ap-costo" :modelValue="mostrarValor(resultados.sumaCosto)" class="w-full"
+                    readonly />
+                  <label for="res-ap-costo">Costo Total ($)</label>
+                </FloatLabel>
+              </div>
+            </Fieldset>
+
+            <Fieldset legend="Requerimientos Lactancia">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                <FloatLabel variant="on">
+                  <InputText id="res-req-pb" :modelValue="mostrarValor(resultados.totalPB)" class="w-full" readonly />
+                  <label for="res-req-pb">PB Total (g)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-em" :modelValue="mostrarValor(resultados.emTotal)" class="w-full" readonly />
+                  <label for="res-req-em">EM Total (Mcal)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-em-aj" :modelValue="mostrarValor(resultados.emAjustado)" class="w-full"
+                    readonly />
+                  <label for="res-req-em-aj">EM Ajustado (Mcal)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-em-mov" :modelValue="mostrarValor(resultados.emMov)" class="w-full" readonly />
+                  <label for="res-req-em-mov">EM Movilización</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-em-rec" :modelValue="mostrarValor(resultados.emRec)" class="w-full" readonly />
+                  <label for="res-req-em-rec">EM Recuperación</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-ca" :modelValue="mostrarValor(resultados.ca)" class="w-full" readonly />
+                  <label for="res-req-ca">Calcio (g/d)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-p" :modelValue="mostrarValor(resultados.p)" class="w-full" readonly />
+                  <label for="res-req-p">Fósforo (g/d)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-fdn" :modelValue="mostrarValor(resultados.fdnTotal)" class="w-full" readonly />
+                  <label for="res-req-fdn">FDN total (% MS)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-ctms" :modelValue="mostrarValor(resultados.ctmsPv)" class="w-full" readonly />
+                  <label for="res-req-ctms">CTMS / PV (%)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-ctms-i" :modelValue="mostrarValor(resultados.ctmsPvInicio)" class="w-full"
+                    readonly />
+                  <label for="res-req-ctms-i">CTMS / PV (Inicio)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-req-ctms-m" :modelValue="mostrarValor(resultados.ctmsPvMitad)" class="w-full"
+                    readonly />
+                  <label for="res-req-ctms-m">CTMS / PV (Mitad)</label>
+                </FloatLabel>
+              </div>
+            </Fieldset>
+
+            <Fieldset legend="Requerimientos Último Tercio Gestación">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                <FloatLabel variant="on">
+                  <InputText id="res-utg-pb" :modelValue="mostrarValor(resultados.utgPB)" class="w-full" readonly />
+                  <label for="res-utg-pb">UTG PB (g)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-utg-em" :modelValue="mostrarValor(resultados.utgEM)" class="w-full" readonly />
+                  <label for="res-utg-em">UTG EM (Mcal)</label>
+                </FloatLabel>
+                <FloatLabel variant="on">
+                  <InputText id="res-utg-ctms" :modelValue="mostrarValor(resultados.ctmsPvUTG)" class="w-full"
+                    readonly />
+                  <label for="res-utg-ctms">UTG CTMS / PV (%)</label>
+                </FloatLabel>
+              </div>
+            </Fieldset>
+
+          </div>
+        </template>
+      </Card>
+    </div>
   </div>
 </template>
 
@@ -421,9 +575,13 @@ const agregarAlimento = () => {
 /**
  * 3. Se dispara al guardar la edición de MTC en la tabla
  */
-const onRowEditSave = (event) => {
-
-  toast.add({ severity: 'success', summary: 'Actualizado', detail: 'Cantidad (MTC) actualizada', life: 3000 });
+const onRowEditSave = () => {
+  // PrimeVue ya actualizó el dato en 'form.alimentos' automáticamente.
+  
+  // ¡AQUÍ ESTÁ LA CORRECCIÓN!
+  // Llamamos a resetResultados() para borrar los totales viejos
+  // y notificar al usuario que debe recalcular.
+  resetResultados();
 }
 
 /**
@@ -481,7 +639,7 @@ function calcular() {
   const emMant = 0.4 + (0.0289 * form.pVivo)
   const emMantAjust = emMant + ((emMant * form.actVoluntaria) / 100) + ((emMant * form.actReproductiva) / 100)
   const emProd = (1.1192 + (0.0317 * form.gButirosa)) * form.ltDiarios
-  
+
   // --- 2. RESETEO DE SUMATORIAS ---
   resultados.sumaMtc = 0
   resultados.sumaMs = 0
@@ -497,7 +655,7 @@ function calcular() {
     if (item.alimento && item.mtc) {
       const ali = item.alimento
       const mtc = parseFloat(item.mtc)
-      
+
       // Asumiendo que ali.ms es un decimal (ej: 0.88)
       const ms = mtc * parseFloat((ali.ms + "").replace(",", "."))
 
@@ -518,7 +676,7 @@ function calcular() {
   })
 
   // --- 4. CÁLCULO DE RESULTADOS Y BALANCES ---
-  
+
   // Requerimientos
   resultados.totalPB = round2(pbMantAjust + pbProd)
   resultados.emTotal = round2(emMantAjust + emProd)
@@ -543,7 +701,7 @@ function calcular() {
       (0.98352 * form.penc * form.nc) +
       (0.011735 * form.penc * form.dGestacion * form.nc)) * 0.239) + emMantAjust
   )
-  
+
   // Totales de la Ración (redondeados)
   resultados.ctmsPv = round2((resultados.sumaMs / form.pVivo) * 100)
   resultados.sumaMtc = round2(resultados.sumaMtc)
@@ -553,15 +711,15 @@ function calcular() {
   resultados.sumaCa = round2(resultados.sumaCa)
   resultados.sumaP = round2(resultados.sumaP)
   resultados.sumaCosto = round2(resultados.sumaCosto)
-  resultados.sumaFdn = round2(resultados.sumaFdn / resultados.sumaMs * 100) 
-  
+  resultados.sumaFdn = round2(resultados.sumaFdn / resultados.sumaMs * 100)
+
   // Balances
   resultados.balancePb = round2(resultados.sumaPb - resultados.totalPB)
   resultados.balanceEm = round2(resultados.sumaEm - resultados.emAjustado)
   resultados.balanceCa = round2(resultados.sumaCa - resultados.ca)
   resultados.balanceP = round2(resultados.sumaP - resultados.p)
   resultados.balanceFdn = round2(resultados.sumaFdn - resultados.fdnTotal)
-  
+
   // Otros cálculos
   resultados.ctmsPvInicio = round2((((165 + (368.6 * form.ltDiarios) + (34.8 * form.pVivo ** 0.75)) / 1000) / form.pVivo) * 100)
   resultados.ctmsPvMitad = round2((((533 + (305.2 * form.ltDiarios) + (13.3 * form.pVivo)) / 1000) / form.pVivo) * 100)
@@ -571,9 +729,45 @@ function calcular() {
   // --- LÍNEA AÑADIDA ---
   // Imprimimos una copia limpia de los resultados en la consola
   console.log('Resultados del cálculo:', { ...resultados }); // [!code ++]
-  
+
   toast.add({ severity: 'success', summary: 'Cálculo Exitoso', detail: 'Resultados actualizados', life: 3000 });
 }
+
+const mostrarValor = (valor) => {
+  // Si es 0, es 0
+  if (valor === 0) return '0.00';
+
+  // Si es nulo, indefinido, o no es un número finito (NaN, Infinity)
+  if (valor === null || valor === undefined || !isFinite(valor) || isNaN(valor)) {
+    return '-'; // Devuelve el guion
+  }
+
+  // Redondear y formatear a 2 decimales
+  return (Math.round(valor * 100) / 100).toFixed(2);
+};
+
+/**
+ * 2. Devuelve el ESTILO de color (esta es la que te está faltando)
+ */
+const getBalanceStyle = (balance) => {
+  const colorGris = '#6b7280';   // Tailwind gray-600
+  const colorVerde = '#16a34a'; // Tailwind green-600
+  const colorRojo = '#dc2626';  // Tailwind red-600
+
+  // Si es 0, null, NaN, o Infinito
+  if (balance === 0 || balance === null || balance === undefined || !isFinite(balance) || isNaN(balance)) {
+    return { color: colorGris }; // ¡Gris si es 0!
+  }
+  if (balance > 0) {
+    return { color: colorVerde }; // Verde si es positivo
+  }
+  if (balance < 0) {
+    return { color: colorRojo }; // Rojo si es negativo
+  }
+
+  return { color: colorGris }; // Por si acaso
+};
+
 </script>
 
 <style scoped>

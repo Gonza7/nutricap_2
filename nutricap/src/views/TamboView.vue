@@ -274,7 +274,7 @@
       </Card>
       <Card class="flex-1 min-h-0">
         <template #title>Resultados del Cálculo</template>
-        <template #content class="h-full">
+        <template #content>
           <div class="flex flex-col gap-6 h-full overflow-y-auto">
 
             <Fieldset legend="Balances" :toggleable="false">
@@ -433,7 +433,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, reactive } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { db } from '@/db';
 import { useToast } from 'primevue/usetoast'
 import { useVuelidate } from '@vuelidate/core'
@@ -473,8 +473,11 @@ const rules = reactive({
   dGestacion: { required: helpers.withMessage('Los días de gestación son obligatorios', required), numeric: helpers.withMessage('Los días de gestación deben ser un numero', numeric), minValue: withMessage('Los días de gestación deben ser mayor o igual a 0', minValue(0)) },
 });
 const v$ = useVuelidate(rules, form)
-// --- ESTADOS de SALIDA ---
-const resultados = reactive({
+
+// --- ESTADOS de SALIDA (CORREGIDO) ---
+
+// PASO 1: Define el estado inicial como un objeto constante
+const initialStateResultados = {
   totalPB: null,
   emTotal: null,
   emAjustado: null,
@@ -506,89 +509,63 @@ const resultados = reactive({
   ctmsPvMitad: null,
   ctmsPvUTG: null,
   balanceFdn: null,
-});
+};
 
-// --- NUEVO ESTADO para el formulario de alimentos ---
+// PASO 2: Crea tu 'resultados' reactivo usando una copia de ese estado inicial
+const resultados = reactive({ ...initialStateResultados });
 
-// Refs para los inputs de "Añadir Alimento"
+// --- (Refs para el formulario de alimentos) ---
 const alimentoSeleccionado = ref(null);
 const mtcSeleccionado = ref(null);
-
-// Ref para las sugerencias del AutoComplete
 const alimentosSugeridos = ref([]);
-
-// Ref para controlar qué fila se está editando en la tabla
 const editingRows = ref([]);
 
-// --- NUEVAS FUNCIONES ---
+// --- FUNCIONES ---
 
-/**
- * 1. Filtra la lista de alimentos para el AutoComplete
- */
 const buscarAlimento = (event) => {
-  // Si no hay texto, muestra todos. Si hay, filtra.
   if (!event.query.trim().length) {
     alimentosSugeridos.value = [...alimentosDB.value];
   } else {
     alimentosSugeridos.value = alimentosDB.value.filter((alimento) => {
-      // Búsqueda insensible a mayúsculas
       return alimento.nombre.toLowerCase().includes(event.query.toLowerCase());
     });
   }
 }
 
-/**
- * 2. Añade el alimento y MTC seleccionados a la tabla
- */
 const agregarAlimento = () => {
-  // Validación: ¿Seleccionó un alimento?
+  // ... (tus validaciones están bien) ...
   if (!alimentoSeleccionado.value || typeof alimentoSeleccionado.value !== 'object') {
     toast.add({ severity: 'warn', summary: 'Error', detail: 'Debe seleccionar un alimento válido de la lista', life: 3000 });
     return;
   }
-
-  // Validación: ¿Ingresó MTC?
   if (!mtcSeleccionado.value || mtcSeleccionado.value <= 0) {
     toast.add({ severity: 'warn', summary: 'Error', detail: 'Debe ingresar una cantidad (MTC) positiva', life: 3000 });
     return;
   }
-
-  // Validación: ¿El alimento ya está en la lista? (Asumo que alimento.id es único)
   const existe = form.alimentos.find(item => item.alimento.id === alimentoSeleccionado.value.id);
   if (existe) {
     toast.add({ severity: 'error', summary: 'Duplicado', detail: 'Ese alimento ya está en la ración. Puede editar la cantidad MTC directamente en la tabla.', life: 4000 });
     return;
   }
 
-  // ¡Éxito! Añadir al array 'form.alimentos'
   form.alimentos.push({
     alimento: alimentoSeleccionado.value,
     mtc: mtcSeleccionado.value
   });
 
-  // Resetear los inputs
   alimentoSeleccionado.value = null;
   mtcSeleccionado.value = null;
 
-}
-
-/**
- * 3. Se dispara al guardar la edición de MTC en la tabla
- */
-const onRowEditSave = () => {
-  // PrimeVue ya actualizó el dato en 'form.alimentos' automáticamente.
-  
-  // ¡AQUÍ ESTÁ LA CORRECCIÓN!
-  // Llamamos a resetResultados() para borrar los totales viejos
-  // y notificar al usuario que debe recalcular.
+  // CORRECCIÓN 2: Llamar a resetResultados() aquí también
   resetResultados();
 }
 
-/**
- * 4. Muestra la confirmación antes de eliminar
- */
+const onRowEditSave = () => {
+  // Esto es correcto
+  resetResultados();
+}
+
 const confirmarEliminar = (alimentoData) => {
-  // Usamos el 'confirm' que ya tenías importado
   confirm.require({
     message: `¿Está seguro de que desea eliminar "${alimentoData.alimento.nombre}" de la ración?`,
     header: 'Confirmar eliminación',
@@ -597,31 +574,28 @@ const confirmarEliminar = (alimentoData) => {
     rejectLabel: 'Cancelar',
     acceptClass: 'p-button-danger',
     accept: () => {
-      // Si el usuario acepta, llama a la función de eliminar
       eliminarAlimento(alimentoData);
     }
   });
 }
 
-/**
- * 5. Elimina el alimento de la ración
- */
 const eliminarAlimento = (alimentoData) => {
-  // Encontrar el índice del objeto a eliminar (usando el id único)
   const index = form.alimentos.findIndex(item => item.alimento.id === alimentoData.alimento.id);
-
   if (index > -1) {
-    // Eliminar el item del array
     form.alimentos.splice(index, 1);
 
-    toast.add({ severity: 'info', summary: 'Eliminado', detail: `"${alimentoData.alimento.nombre}" fue eliminado`, life: 3000 });
+    // CORRECCIÓN 2: Llamar a resetResultados() aquí también
+    resetResultados();
+    // (Ya no necesitas el toast de "eliminado", resetResultados ya lo notifica)
   }
 }
+
+// CORRECCIÓN 1: 'resetResultados' AHORA FUNCIONA
 function resetResultados() {
-  Object.assign(resultados, initialStateResultados);
+  Object.assign(resultados, initialStateResultados); // <-- Esto ahora funciona
   toast.add({ severity: 'warn', summary: 'Datos modificados', detail: 'Los resultados han sido reseteados. Presione "Calcular" para actualizar.', life: 4000 });
 }
-// --- Carga inicial ---
+
 onMounted(async () => {
   alimentosDB.value = await db.alimentos.toArray();
 });
@@ -630,17 +604,15 @@ function round2(value) {
   return Math.round(value * 100) / 100;
 }
 
+// ... (tu función 'calcular' está bien) ...
 function calcular() {
-  // --- 1. CÁLCULO DE REQUERIMIENTOS ---
+  // ... (cálculos) ...
   const pbMant = 15.667 + (1.1315 * form.pVivo)
   const pbMantAjust = ((pbMant * form.actReproductiva) / 100) + pbMant
   const pbProd = form.ltDiarios * (36.905 + (8.9048 * form.gButirosa))
-
   const emMant = 0.4 + (0.0289 * form.pVivo)
   const emMantAjust = emMant + ((emMant * form.actVoluntaria) / 100) + ((emMant * form.actReproductiva) / 100)
   const emProd = (1.1192 + (0.0317 * form.gButirosa)) * form.ltDiarios
-
-  // --- 2. RESETEO DE SUMATORIAS ---
   resultados.sumaMtc = 0
   resultados.sumaMs = 0
   resultados.sumaPb = 0
@@ -649,35 +621,21 @@ function calcular() {
   resultados.sumaP = 0
   resultados.sumaFdn = 0
   resultados.sumaCosto = 0
-
-  // --- 3. CÁLCULO DE APORTES (SUMATORIA DE RACIÓN) ---
   form.alimentos.forEach(item => {
     if (item.alimento && item.mtc) {
       const ali = item.alimento
       const mtc = parseFloat(item.mtc)
-
-      // Asumiendo que ali.ms es un decimal (ej: 0.88)
       const ms = mtc * parseFloat((ali.ms + "").replace(",", "."))
-
-      // Sumatorias
       resultados.sumaMtc = (resultados.sumaMtc || 0) + mtc
       resultados.sumaMs = (resultados.sumaMs || 0) + ms
-      // Suma en GRAMOS (kg MS * %PB * 10)
       resultados.sumaPb = (resultados.sumaPb || 0) + ((ms * parseFloat(ali.pb)) * 10)
       resultados.sumaEm = (resultados.sumaEm || 0) + (ms * parseFloat(ali.em))
-      // Suma en GRAMOS (kg MS * %Ca * 10)
       resultados.sumaCa = (resultados.sumaCa || 0) + ((ms * parseFloat(ali.calcio)) * 10)
-      // Suma en GRAMOS (kg MS * %P * 10)
       resultados.sumaP = (resultados.sumaP || 0) + ((ms * parseFloat(ali.fosforo)) * 10)
-      // Suma en kg FDN (kg MS * (%FDN / 100))
       resultados.sumaFdn = (resultados.sumaFdn || 0) + ((ms * parseFloat(ali.fdn)) / 100)
       resultados.sumaCosto = (resultados.sumaCosto || 0) + (ms * parseFloat(ali.precio))
     }
   })
-
-  // --- 4. CÁLCULO DE RESULTADOS Y BALANCES ---
-
-  // Requerimientos
   resultados.totalPB = round2(pbMantAjust + pbProd)
   resultados.emTotal = round2(emMantAjust + emProd)
   resultados.emMov = round2(9.98 * form.pdpv)
@@ -685,8 +643,6 @@ function calcular() {
   resultados.emAjustado = round2(resultados.emTotal - resultados.emMov + resultados.emRec)
   resultados.ca = round2(((0.623 * resultados.sumaMs) + 0.228) / 0.45 + (1.4 * form.ltDiarios) / 0.45)
   resultados.p = round2(((0.881 + (0.88 * resultados.sumaMs)) / 0.65) + (1 * form.ltDiarios) / 0.65)
-
-  // Requerimientos de Gestación (UTG)
   resultados.utgPB = round2(
     (((-155.62 - (8.6668 * form.penc) + (2.6495 * form.dGestacion) + (0.0041667 * form.nc) -
       (0.011049 * form.dGestacion * form.dGestacion)) +
@@ -701,8 +657,6 @@ function calcular() {
       (0.98352 * form.penc * form.nc) +
       (0.011735 * form.penc * form.dGestacion * form.nc)) * 0.239) + emMantAjust
   )
-
-  // Totales de la Ración (redondeados)
   resultados.ctmsPv = round2((resultados.sumaMs / form.pVivo) * 100)
   resultados.sumaMtc = round2(resultados.sumaMtc)
   resultados.sumaMs = round2(resultados.sumaMs)
@@ -712,66 +666,46 @@ function calcular() {
   resultados.sumaP = round2(resultados.sumaP)
   resultados.sumaCosto = round2(resultados.sumaCosto)
   resultados.sumaFdn = round2(resultados.sumaFdn / resultados.sumaMs * 100)
-
-  // Balances
   resultados.balancePb = round2(resultados.sumaPb - resultados.totalPB)
   resultados.balanceEm = round2(resultados.sumaEm - resultados.emAjustado)
   resultados.balanceCa = round2(resultados.sumaCa - resultados.ca)
   resultados.balanceP = round2(resultados.sumaP - resultados.p)
   resultados.balanceFdn = round2(resultados.sumaFdn - resultados.fdnTotal)
-
-  // Otros cálculos
   resultados.ctmsPvInicio = round2((((165 + (368.6 * form.ltDiarios) + (34.8 * form.pVivo ** 0.75)) / 1000) / form.pVivo) * 100)
   resultados.ctmsPvMitad = round2((((533 + (305.2 * form.ltDiarios) + (13.3 * form.pVivo)) / 1000) / form.pVivo) * 100)
   resultados.ctmsPvUTG = round2(2 + (0.25 * form.nc - 1))
-  resultados.caP = round2(resultados.sumaCa / resultados.sumaP) // Relación Ca:P
-
-  // --- LÍNEA AÑADIDA ---
-  // Imprimimos una copia limpia de los resultados en la consola
-  console.log('Resultados del cálculo:', { ...resultados }); // [!code ++]
-
+  resultados.caP = round2(resultados.sumaCa / resultados.sumaP)
+  console.log('Resultados del cálculo:', { ...resultados });
   toast.add({ severity: 'success', summary: 'Cálculo Exitoso', detail: 'Resultados actualizados', life: 3000 });
 }
 
+// ... (tus funciones 'mostrarValor' y 'getBalanceStyle' están bien) ...
 const mostrarValor = (valor) => {
-  // Si es 0, es 0
   if (valor === 0) return '0.00';
-
-  // Si es nulo, indefinido, o no es un número finito (NaN, Infinity)
   if (valor === null || valor === undefined || !isFinite(valor) || isNaN(valor)) {
-    return '-'; // Devuelve el guion
+    return '-';
   }
-
-  // Redondear y formatear a 2 decimales
   return (Math.round(valor * 100) / 100).toFixed(2);
 };
-
-/**
- * 2. Devuelve el ESTILO de color (esta es la que te está faltando)
- */
 const getBalanceStyle = (balance) => {
-  const colorGris = '#6b7280';   // Tailwind gray-600
-  const colorVerde = '#16a34a'; // Tailwind green-600
-  const colorRojo = '#dc2626';  // Tailwind red-600
-
-  // Si es 0, null, NaN, o Infinito
+  const colorGris = '#6b7280';
+  const colorVerde = '#16a34a';
+  const colorRojo = '#dc2626';
   if (balance === 0 || balance === null || balance === undefined || !isFinite(balance) || isNaN(balance)) {
-    return { color: colorGris }; // ¡Gris si es 0!
+    return { color: colorGris };
   }
   if (balance > 0) {
-    return { color: colorVerde }; // Verde si es positivo
+    return { color: colorVerde };
   }
   if (balance < 0) {
-    return { color: colorRojo }; // Rojo si es negativo
+    return { color: colorRojo };
   }
-
-  return { color: colorGris }; // Por si acaso
+  return { color: colorGris };
 };
-
 </script>
 
 <style scoped>
-/* Pequeño ajuste para que los <Fieldset> de resultados 
+/* Pequeño ajuste para que los <Fieldset> de resultados
   no se vean tan pegados cuando están colapsados.
 */
 :deep(.p-fieldset-toggleable .p-fieldset-legend) {

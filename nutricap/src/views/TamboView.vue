@@ -181,8 +181,8 @@
                           <span v-if="slotProps.option.momento">
                             - {{ slotProps.option.momento }}
                           </span>
-                          <span v-if="slotProps.option.formaFisica">
-                            - {{ slotProps.option.formaFisica }}
+                          <span v-if="slotProps.option.forma">
+                            - {{ slotProps.option.forma }}
                           </span>
                         </div>
                       </div>
@@ -192,9 +192,10 @@
                 </FloatLabel>
               </div>
 
-              <div class="shrink-0 flex flex-col gap-2">
+              <div class="shrink-0 flex flex-col gap-2 w-full md:w-auto">
                 <FloatLabel variant="on">
-                  <InputNumber v-model="mtcSeleccionado" id="mtc" :minFractionDigits="0" :maxFractionDigits="2" />
+                  <InputNumber v-model="mtcSeleccionado" id="mtc" :minFractionDigits="0" :maxFractionDigits="2"
+                    class="w-full" />
                   <label for="mtc">MTC (kg)</label>
                 </FloatLabel>
               </div>
@@ -265,14 +266,16 @@
         <template #content>
           <div class="flex flex-col gap-6">
 
-            <div class="border-t pt-4">
-              <Button @click="calcular" label="Calcular" icon="pi pi-calculator" class="w-full p-button-lg" />
+            <div class="border-t pt-4 flex flex-col sm:flex-row gap-2">
+              <Button @click="calcular" label="Calcular" icon="pi pi-calculator" class="w-full sm:flex-1 p-button-lg" />
+              <Button @click="limpiar" label="Limpiar" icon="pi pi-refresh"
+                class="w-full sm:flex-1 p-button-lg p-button-outlined" />
             </div>
 
           </div>
         </template>
       </Card>
-      <Card class="flex-1 min-h-0">
+      <Card class="flex-1 min-h-0" v-if="mostrarResultados">
         <template #title>Resultados del Cálculo</template>
         <template #content>
           <div class="flex flex-col gap-6 h-full overflow-y-auto">
@@ -437,8 +440,10 @@ import { ref, onMounted, reactive } from 'vue';
 import { db } from '@/db';
 import { useToast } from 'primevue/usetoast'
 import { useVuelidate } from '@vuelidate/core'
-import { required, numeric, minValue, helpers } from '@vuelidate/validators'
+import { required, numeric, minValue, maxValue, helpers } from '@vuelidate/validators'
 import { useConfirm } from 'primevue/useconfirm'
+
+const mostrarResultados = ref(false)
 
 const { withMessage } = helpers
 
@@ -451,7 +456,7 @@ const form = reactive({
   pVivo: 0,
   gButirosa: 0,
   ltDiarios: 0,
-  actVoluntaria: 0,
+  actVoluntaria: 10,
   actReproductiva: 0,
   pdpv: 0,
   gdpv: 0,
@@ -464,7 +469,7 @@ const rules = reactive({
   pVivo: { required: helpers.withMessage('El peso vivo es obligatorio', required), numeric: helpers.withMessage('El peso vivo debe ser un numero', numeric), minValue: withMessage('El peso vivo debe ser mayor o igual a 0', minValue(0)) },
   gButirosa: { required: helpers.withMessage('La grasa butirosa es obligatoria', required), numeric: helpers.withMessage('La grasa butirosa debe ser un numero', numeric), minValue: withMessage('La grasa butirosa debe ser mayor o igual a 0', minValue(0)) },
   ltDiarios: { required: helpers.withMessage('Los litros diarios son obligatorios', required), numeric: helpers.withMessage('Los litros diarios deben ser un numero', numeric), minValue: withMessage('Los litros diarios deben ser mayor o igual a 0', minValue(0)) },
-  actVoluntaria: { required: helpers.withMessage('La actividad voluntaria es obligatoria', required), numeric: helpers.withMessage('La actividad voluntaria debe ser un numero', numeric), minValue: withMessage('La actividad voluntaria debe ser mayor o igual a 0', minValue(0)) },
+  actVoluntaria: { required: helpers.withMessage('La actividad voluntaria es obligatoria', required), numeric: helpers.withMessage('La actividad voluntaria debe ser un numero', numeric), minValue: withMessage('La actividad voluntaria debe ser mayor o igual a 10', minValue(10)), maxValue: withMessage('La actividad voluntaria debe ser menor o igual a 40', maxValue(40)) },
   actReproductiva: { required: helpers.withMessage('La actividad reproductiva es obligatoria', required), numeric: helpers.withMessage('La actividad reproductiva debe ser un numero', numeric), minValue: withMessage('La actividad reproductiva debe ser mayor o igual a 0', minValue(0)) },
   pdpv: { required: helpers.withMessage('La pérdida diaria de peso vivo es obligatoria', required), numeric: helpers.withMessage('La pérdida diaria de peso vivo debe ser un numero', numeric), minValue: withMessage('La pérdida diaria de peso vivo debe ser mayor o igual a 0', minValue(0)) },
   gdpv: { required: helpers.withMessage('La ganancia diaria de peso vivo es obligatoria', required), numeric: helpers.withMessage('La ganancia diaria de peso vivo debe ser un numero', numeric), minValue: withMessage('La ganancia diaria de peso vivo debe ser mayor o igual a 0', minValue(0)) },
@@ -560,8 +565,15 @@ const agregarAlimento = () => {
   resetResultados();
 }
 
-const onRowEditSave = () => {
-  // Esto es correcto
+const onRowEditSave = (event) => {
+
+  // 2. Extrae el índice y los datos nuevos del evento
+  const { newData, index } = event;
+
+  // 3. Actualiza el array 'form.alimentos' en la posición correcta
+  form.alimentos[index] = newData;
+
+  // 4. Ahora sí, resetea los resultados
   resetResultados();
 }
 
@@ -605,8 +617,28 @@ function round2(value) {
 }
 
 // ... (tu función 'calcular' está bien) ...
-function calcular() {
-  // ... (cálculos) ...
+async function calcular() {
+  // 1. Marcamos el formulario como "intentado"
+  submitted.value = true;
+
+  // 2. Ejecutamos todas las validaciones y esperamos el resultado
+  const isValid = await v$.value.$validate();
+
+  // 3. Si el formulario NO es válido...
+  if (!isValid) {
+    // ...mostramos un toast de error y detenemos la función.
+    toast.add({
+      severity: 'error',
+      summary: 'Error en el formulario',
+      detail: 'Por favor, corrige los campos marcados en rojo',
+      life: 4000
+    });
+    return; // ¡Importante! No continuamos con los cálculos
+  }
+
+  // 4. Si llegamos aquí, el formulario ES VÁLIDO.
+  //    (Aquí va todo tu código de cálculo original)
+
   const pbMant = 15.667 + (1.1315 * form.pVivo)
   const pbMantAjust = ((pbMant * form.actReproductiva) / 100) + pbMant
   const pbProd = form.ltDiarios * (36.905 + (8.9048 * form.gButirosa))
@@ -676,6 +708,9 @@ function calcular() {
   resultados.ctmsPvUTG = round2(2 + (0.25 * form.nc - 1))
   resultados.caP = round2(resultados.sumaCa / resultados.sumaP)
   console.log('Resultados del cálculo:', { ...resultados });
+
+  mostrarResultados.value = true;
+  // 5. Mostrar el toast de éxito
   toast.add({ severity: 'success', summary: 'Cálculo Exitoso', detail: 'Resultados actualizados', life: 3000 });
 }
 
@@ -702,6 +737,41 @@ const getBalanceStyle = (balance) => {
   }
   return { color: colorGris };
 };
+
+function limpiar() {
+  // 1. Ocultar la tarjeta de resultados
+  mostrarResultados.value = false;
+
+  // 2. Resetear los datos del formulario 'form'
+  form.pVivo = 0;
+  form.gButirosa = 0;
+  form.ltDiarios = 0;
+  form.actVoluntaria = 10;
+  form.actReproductiva = 0;
+  form.pdpv = 0;
+  form.gdpv = 0;
+  form.penc = 0;
+  form.nc = 0;
+  form.dGestacion = 0;
+
+  // 3. Vaciar la lista de alimentos
+  form.alimentos = [];
+
+  // 4. Limpiar los datos calculados de 'resultados'
+  Object.assign(resultados, initialStateResultados);
+
+  // 5. Resetear el estado de la validación
+  submitted.value = false;
+  v$.value.$reset(); // Limpia los mensajes de error
+
+  // 6. Notificar al usuario
+  toast.add({
+    severity: 'info',
+    summary: 'Formulario Limpio',
+    detail: 'Todos los campos han sido reseteados',
+    life: 3000
+  });
+}
 </script>
 
 <style scoped>

@@ -21,6 +21,18 @@ const router = createRouter({
       // Creamos la ruta para la calculadora
       component: () => import('../views/TamboView.vue'),
     },
+    {
+      path: '/about',
+      name: 'about',
+      // Lazy-loaded view
+      component: () => import('../views/AboutView.vue'),
+    },
+    {
+      path: '/test',
+      name: 'test',
+      // Lazy-loaded view
+      component: () => import('../views/TestView.vue'), 
+    }
   ],
 })
 

@@ -1,15 +1,24 @@
 <template>
   <header>
     <Menubar :model="menuItems">
+
       <template #start>
-        <span class="font-bold text-lg mr-4">Nutricap</span>
+        <RouterLink to="/" class="mr-4">
+          <img
+            src="@/assets/logo.png"
+            alt="Nutricap Logo"
+            class="h-10 w-auto"
+          />
+        </RouterLink>
       </template>
+
       <template #item="{ item, props }">
         <RouterLink :to="item.route" v-bind="props.action" class="flex items-center">
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
         </RouterLink>
       </template>
+
       <template #end>
         <Button
           :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
@@ -23,7 +32,7 @@
     </Menubar>
   </header>
 
-  <main class="flex-grow w-full mx-auto p-4">
+  <main class="grow w-full mx-auto p-4">
     <Toast />
     <ConfirmDialog />
     <RouterView />
@@ -53,11 +62,11 @@ function aplicarTemaGuardado() {
 
 // --- 2. Items del menú (Sin cambios) ---
 const menuItems = ref([
-  {
+  /* {
     label: 'Inicio',
     icon: 'pi pi-home',
     route: '/',
-  },
+  }, */
   {
     label: 'Tambo',
     icon: 'pi pi-calculator',
@@ -67,6 +76,16 @@ const menuItems = ref([
     label: 'Alimentos',
     icon: 'pi pi-database',
     route: '/alimentos',
+  },
+  {
+    label: 'Acerca de',
+    icon: 'pi pi-info-circle',
+    route: '/about',
+  },
+  {
+    label: 'Test',
+    icon: 'pi pi-cog',
+    route: '/test',
   },
 ])
 
@@ -99,7 +118,7 @@ function parsearNumero(valor) {
   }
   const valorLimpio = String(valor).replace(',', '.');
   const numero = parseFloat(valorLimpio);
-  
+
   // Si parseFloat falla (ej. por "texto") o es vacío, devuelve 0
   return isNaN(numero) ? 0 : numero;
 }
@@ -123,9 +142,9 @@ onMounted(() => {
             delimiter: ';',
             skipEmptyLines: true,
             // dynamicTyping: false, <-- Quitamos esto. Es más seguro parsear manualmente.
-            
+
             complete: (results) => {
-              
+
               // --- ¡AQUÍ APLICAMOS LA NUEVA LIMPIEZA! ---
               const alimentosLimpios = results.data
                 .map((item) => {
@@ -135,7 +154,7 @@ onMounted(() => {
                     nombre: capitalizar(item.nombre),
                     forma: capitalizar(item.forma),
                     momento: capitalizar(item.momento),
-                    
+
                     ms: parsearNumero(item.ms),
                     em: parsearNumero(item.em),
                     pb: parsearNumero(item.pb),

@@ -6,7 +6,7 @@ import { definePreset, palette, updatePrimaryPalette } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 //Estilos CSS de PrimeVue
 import 'primeicons/primeicons.css'
-import 'primeflex/primeflex.css'
+//import 'primeflex/primeflex.css'
 //Componentes PrimeVue
 import Button from 'primevue/button'
 import Card from 'primevue/card'
@@ -22,6 +22,9 @@ import Row from 'primevue/row'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmationService from 'primevue/confirmationservice'
 import InputNumber from 'primevue/inputnumber'
+import FloatLabel from 'primevue/floatlabel'
+import Fieldset from 'primevue/fieldset'
+import AutoComplete from 'primevue/autocomplete'
 const MyPreset = definePreset(Aura, {})
 const Noir = definePreset(Aura, {
   semantic: {
@@ -98,6 +101,9 @@ export const primeVueConfig = (app) => {
   app.component('ColumnGroup', ColumnGroup)
   app.component('Row', Row)
   app.component('ConfirmDialog', ConfirmDialog)
+  app.component('FloatLabel', FloatLabel)
+  app.component('Fieldset', Fieldset)
+  app.component('AutoComplete', AutoComplete)
   app.use(ToastService)
   app.use(ConfirmationService)
 }

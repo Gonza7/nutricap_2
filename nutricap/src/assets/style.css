@@ -39,6 +39,7 @@ body {
   color: var(--body-text-color);
 }
 
+@theme {  --breakpoint-xs: 30rem;  --breakpoint-2xl: 86rem;  --breakpoint-3xl: 120rem;}
 /* --- CAMBIO 2: Arreglo del layout de #app --- */
 /* Esto convierte tu app en un contenedor flexible vertical.
   El <header> (Menubar) estará arriba.

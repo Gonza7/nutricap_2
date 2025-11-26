@@ -1,9 +1,9 @@
 <template>
   <Card>
     <template #title>
-      <div class="flex justify-content-between align-items-center mb-3">
-        <span class="text-xl font-semibold">Tabla de Alimentos</span>
-        <Button label="Nuevo Alimento" icon="pi pi-plus" @click="abrirDialogNuevo" />
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
+        <span class="text-xl font-semibold mb-2 sm:mb-auto">Tabla de Alimentos</span>
+        <Button label="Nuevo Alimento" icon="pi pi-plus" @click="abrirDialogNuevo" class="w-full sm:w-auto sm:mr-2 self-center sm:self-auto"/>
       </div>
     </template>
 
@@ -21,9 +21,9 @@
         dataKey="id"
       >
         <template #header>
-          <div class="filtros-tabla">
-            <InputText v-model="filtroGrupo" placeholder="Filtrar por Grupo" />
-            <InputText v-model="filtroNombre" placeholder="Filtrar por Nombre" />
+          <div class="flex flex-wrap gap-2 mb-2 justify-center sm:justify-end">
+            <InputText v-model="filtroGrupo" placeholder="Filtrar por Grupo" class="w-full sm:w-auto" />
+            <InputText v-model="filtroNombre" placeholder="Filtrar por Nombre" class="w-full sm:w-auto" />
           </div>
         </template>
 
@@ -421,7 +421,6 @@ import { useToast } from 'primevue/usetoast'
 import { useVuelidate } from '@vuelidate/core'
 import { required, numeric, minValue, helpers } from '@vuelidate/validators'
 import { useConfirm } from 'primevue/useconfirm'
-import { Dialog, FloatLabel } from 'primevue'
 
 // Extrae 'withMessage' de 'helpers' para usarlo fácilmente
 const { withMessage } = helpers

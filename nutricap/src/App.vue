@@ -1,7 +1,6 @@
 <template>
-  <header>
+  <header v-if="!route.meta.hideNavbar">
     <Menubar :model="menuItems">
-
       <template #start>
         <RouterLink to="/" class="mr-4">
           <img
@@ -32,7 +31,7 @@
     </Menubar>
   </header>
 
-  <main class="grow w-full mx-auto p-4">
+  <main class="grow w-full mx-auto" :class="{ 'p-4': !route.meta.hideNavbar }">
     <Toast />
     <ConfirmDialog />
     <RouterView />
@@ -41,11 +40,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { RouterView, RouterLink } from 'vue-router'
-import { db } from './db' // Importamos Dexie
-import Papa from 'papaparse' // Importamos Papa Parse
+import { RouterView, RouterLink, useRoute } from 'vue-router' // Importamos useRoute
+import { db } from './db'
+import Papa from 'papaparse'
 
-// --- 1. Lógica del Modo Oscuro (Sin cambios) ---
+// Obtenemos la ruta actual para poder leer los meta datos
+const route = useRoute()
+
+// ... (El resto de tu código de App.vue se mantiene igual: isDarkMode, menuItems, carga de CSV, etc.) ...
+// COPIA PEGA EL RESTO DE TU SCRIPT ORIGINAL AQUÍ ABAJO
 const isDarkMode = ref(false)
 function toggleDarkMode() {
   isDarkMode.value = !isDarkMode.value
@@ -60,13 +63,7 @@ function aplicarTemaGuardado() {
   }
 }
 
-// --- 2. Items del menú (Sin cambios) ---
 const menuItems = ref([
-  /* {
-    label: 'Inicio',
-    icon: 'pi pi-home',
-    route: '/',
-  }, */
   {
     label: 'Tambo',
     icon: 'pi pi-calculator',
@@ -82,48 +79,29 @@ const menuItems = ref([
     icon: 'pi pi-info-circle',
     route: '/about',
   },
-  {
-    label: 'Test',
-    icon: 'pi pi-cog',
-    route: '/test',
-  },
+  
 ])
 
-// --- 3. NUEVAS FUNCIONES DE LIMPIEZA ---
-// Las añadimos aquí mismo para usarlas en onMounted
-
-/**
- * Convierte un texto a tipo Título (primera letra mayúscula).
- * Limpia '****' y espacios.
- */
 function capitalizar(texto) {
   if (!texto) {
-    return ''; // Devuelve vacío si es null, undefined o ""
+    return ''; 
   }
   const textoLimpio = String(texto).trim();
   if (textoLimpio === '****') {
-    return ''; // Maneja el caso específico de '****'
+    return ''; 
   }
   return textoLimpio.charAt(0).toUpperCase() + textoLimpio.slice(1).toLowerCase();
 }
 
-/**
- * Convierte un valor (probablemente texto) a un número.
- * - Reemplaza la coma (',') por un punto ('.').
- * - Si el valor es vacío, nulo o no es un número, devuelve 0.
- */
 function parsearNumero(valor) {
   if (!valor) {
-    return 0; // Devuelve 0 para valores vacíos, null o undefined
+    return 0; 
   }
   const valorLimpio = String(valor).replace(',', '.');
   const numero = parseFloat(valorLimpio);
-
-  // Si parseFloat falla (ej. por "texto") o es vacío, devuelve 0
   return isNaN(numero) ? 0 : numero;
 }
 
-// --- 4. LÓGICA DE CARGA DE DATOS (MODIFICADA) ---
 onMounted(() => {
   aplicarTemaGuardado()
   db.alimentos
@@ -134,27 +112,21 @@ onMounted(() => {
         return
       }
       console.log('Base de datos vacía, cargando alimentos desde CSV...')
-      fetch('/alimentos_mod.csv') // Asumimos que está en la carpeta /public
+      fetch('/alimentos_mod.csv') 
         .then((response) => response.text())
         .then((csvText) => {
           Papa.parse(csvText, {
             header: true,
             delimiter: ';',
             skipEmptyLines: true,
-            // dynamicTyping: false, <-- Quitamos esto. Es más seguro parsear manualmente.
-
             complete: (results) => {
-
-              // --- ¡AQUÍ APLICAMOS LA NUEVA LIMPIEZA! ---
               const alimentosLimpios = results.data
                 .map((item) => {
-                  // Aplicamos nuestras funciones a cada campo
                   return {
                     grupo: capitalizar(item.grupo),
                     nombre: capitalizar(item.nombre),
                     forma: capitalizar(item.forma),
                     momento: capitalizar(item.momento),
-
                     ms: parsearNumero(item.ms),
                     em: parsearNumero(item.em),
                     pb: parsearNumero(item.pb),
@@ -164,12 +136,10 @@ onMounted(() => {
                     precio: parsearNumero(item.precio),
                   }
                 })
-                .filter((item) => item.nombre); // Filtramos los que no tienen nombre
+                .filter((item) => item.nombre); 
 
-              // Guardamos en la BBDD
               db.alimentos.bulkAdd(alimentosLimpios).then(() => {
                 console.log(`${alimentosLimpios.length} alimentos limpios cargados.`);
-                // Recargamos la página para que la tabla vea los nuevos datos
                 window.location.reload();
               })
             },
@@ -184,5 +154,3 @@ onMounted(() => {
     })
 })
 </script>
-
-<style scoped></style>

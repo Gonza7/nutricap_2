@@ -19,6 +19,15 @@
       </template>
 
       <template #end>
+        <Button 
+          icon="pi pi-sign-out" 
+          @click="logout" 
+          text 
+          rounded 
+          aria-label="Cerrar sesión" 
+          class="mr-2 text-red-500 hover:bg-red-50"
+          v-tooltip.bottom="'Cerrar Sesión'"
+        />
         <Button
           :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
           @click="toggleDarkMode"
@@ -40,12 +49,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { RouterView, RouterLink, useRoute } from 'vue-router' // Importamos useRoute
+import { RouterView, RouterLink, useRoute, useRouter } from 'vue-router' // Importamos useRoute
 import { db } from './db'
 import Papa from 'papaparse'
-
+import { supabase } from '@/supabase'
 // Obtenemos la ruta actual para poder leer los meta datos
 const route = useRoute()
+const router = useRouter()
 
 // ... (El resto de tu código de App.vue se mantiene igual: isDarkMode, menuItems, carga de CSV, etc.) ...
 // COPIA PEGA EL RESTO DE TU SCRIPT ORIGINAL AQUÍ ABAJO
@@ -62,7 +72,10 @@ function aplicarTemaGuardado() {
     document.documentElement.classList.add('p-dark')
   }
 }
-
+const logout = async () => {
+  await supabase.auth.signOut()
+  router.push({ name: 'login' })
+}
 const menuItems = ref([
   {
     label: 'Tambo',

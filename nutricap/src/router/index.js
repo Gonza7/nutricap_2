@@ -1,65 +1,63 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { supabase } from '@/supabase' // Importar cliente
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('../views/LoginView.vue'),
-      meta: { hideNavbar: true } // Esta es pública, no requiere auth
+    { 
+      path: '/login', 
+      name: 'login', 
+      component: () => import('../views/LoginView.vue'), 
+      meta: { hideNavbar: true } 
     },
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-      meta: { requiresAuth: true } // <--- AGREGAR ESTO A LAS RUTAS PRIVADAS
+    { 
+      path: '/', 
+      name: 'home', 
+      component: HomeView, 
+      meta: { requiresAuth: true } 
     },
-    {
-      path: '/alimentos',
-      name: 'alimentos',
-      component: () => import('../views/AlimentosView.vue'),
-      meta: { requiresAuth: true } // <--- AGREGAR
+    { 
+      path: '/alimentos', 
+      name: 'alimentos', 
+      component: () => import('../views/AlimentosView.vue'), 
+      meta: { requiresAuth: true } 
     },
-    {
-      path: '/tambo',
-      name: 'tambo',
-      component: () => import('../views/TamboView.vue'),
-      meta: { requiresAuth: true } // <--- AGREGAR
+    { 
+      path: '/tambo', 
+      name: 'tambo', 
+      component: () => import('../views/TamboView.vue'), 
+      meta: { requiresAuth: true } 
     },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue'),
-      // Puedes dejar About pública si quieres, o agregar requiresAuth: true
+    { 
+      path: '/about', 
+      name: 'about', 
+      component: () => import('../views/AboutView.vue') 
     },
-    {
-      path: '/test',
-      name: 'test',
-      component: () => import('../views/TestView.vue'),
-      meta: { requiresAuth: true } // <--- AGREGAR
+    { 
+      path: '/test', 
+      name: 'test', 
+      component: () => import('../views/TestView.vue'), 
+      meta: { requiresAuth: true } 
     }
-  ],
+  ]
 })
 
-// --- GUARDIA DE NAVEGACIÓN ---
-router.beforeEach((to, from, next) => {
-  // Verificamos si la ruta a la que vamos tiene la meta propiedad "requiresAuth"
+// --- GUARDIA DE NAVEGACIÓN CON SUPABASE ---
+router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   
-  // Verificamos si el usuario tiene la sesión guardada
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
+  // Obtenemos la sesión actual de Supabase
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (requiresAuth && !isAuthenticated) {
-    // Si requiere auth y NO está logueado, mandar al login
+  if (requiresAuth && !session) {
+    // Si requiere auth y NO hay sesión, al login
     next({ name: 'login' })
-  } else if (to.name === 'login' && isAuthenticated) {
-    // (Opcional) Si ya está logueado e intenta ir al login, mandar al home
+  } else if (to.name === 'login' && session) {
+    // Si ya tiene sesión e intenta ir al login, al home
     next({ name: 'home' })
   } else {
-    // En cualquier otro caso, dejar pasar
     next()
   }
 })

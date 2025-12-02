@@ -46,7 +46,7 @@ const router = createRouter({
       path: '/update-password',
       name: 'update-password',
       component: UpdatePasswordView,
-      meta: { requiresAuth: true } // El link de email ya nos da la sesión
+      meta: { requiresAuth: true, hideNavbar: true } // El link de email ya nos da la sesión
     },
   ]
 })

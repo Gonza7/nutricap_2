@@ -4,7 +4,7 @@
       <template #title>
         <div class="text-center mb-4">
           <img src="@/assets/logo.png" alt="Nutricap Logo" class="h-16 w-auto mx-auto mb-2" />
-          <span class="text-2xl font-bold text-primary-600">Bienvenido</span>
+          <span class="text-2xl font-bold">Bienvenido</span>
         </div>
       </template>
 
@@ -42,7 +42,7 @@
     </Card>
     <Dialog v-model:visible="dialogoRecuperacion" header="Recuperar Contraseña" :modal="true" class="w-full max-w-sm">
       <div class="flex flex-col gap-4">
-        <p class="text-sm text-gray-600 dark:text-gray-300">
+        <p class="text-sm">
           Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
         </p>
         <div class="flex flex-col gap-2">
@@ -100,6 +100,7 @@ const handleLogin = async () => {
     if (error) throw error
 
     if (data.session) {
+      
       toast.add({ severity: 'success', summary: 'Bienvenido', detail: 'Inicio de sesión exitoso', life: 3000 })
       router.push({ name: 'home' })
     }

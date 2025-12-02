@@ -1,9 +1,9 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-surface-50 dark:bg-surface-900 px-4">
+  <div class="flex items-center justify-center min-h-screen px-4">
     <Card class="w-full max-w-md shadow-lg">
       <template #title>
         <div class="text-center mb-4">
-          <span class="text-2xl font-bold text-primary-600">Establecer Nueva Contraseña</span>
+          <span class="text-2xl font-bold text-primary-600">Configurar Contraseña</span>
         </div>
       </template>
       
@@ -49,8 +49,12 @@ const updatePassword = async () => {
 
     if (error) throw error
 
-    toast.add({ severity: 'success', summary: 'Éxito', detail: 'Contraseña actualizada correctamente', life: 3000 })
-    router.push({ name: 'home' }) // Redirigir al home ya logueado
+    // 1. Cerrar sesión forzosamente
+    await supabase.auth.signOut()
+    
+    // 2. Avisar y mandar al login
+    toast.add({ severity: 'success', summary: 'Cuenta activada', detail: 'Contraseña creada. Inicia sesión.', life: 4000 })
+    router.push({ name: 'login' }) 
 
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Error', detail: error.message, life: 3000 })

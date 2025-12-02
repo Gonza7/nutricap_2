@@ -7,18 +7,14 @@
           <span class="text-2xl font-bold text-primary-600">Bienvenido</span>
         </div>
       </template>
-      
+
       <template #content>
         <form @submit.prevent="handleLogin" class="flex flex-col gap-6 mt-4">
-          
+
           <div class="flex flex-col gap-2">
             <FloatLabel variant="on">
-              <InputText 
-                id="username" 
-                v-model="v$.username.$model" 
-                class="w-full" 
-                :class="{ 'p-invalid': v$.username.$invalid && submitted }"
-              />
+              <InputText id="username" v-model="v$.username.$model" class="w-full"
+                :class="{ 'p-invalid': v$.username.$invalid && submitted }" />
               <label for="username">Correo electrónico</label>
             </FloatLabel>
             <small v-if="v$.username.$invalid && submitted" class="text-red-500">
@@ -28,13 +24,8 @@
 
           <div class="flex flex-col gap-2">
             <FloatLabel variant="on">
-              <InputText 
-                id="password" 
-                v-model="v$.password.$model" 
-                type="password"
-                class="w-full" 
-                :class="{ 'p-invalid': v$.password.$invalid && submitted }"
-              />
+              <InputText id="password" v-model="v$.password.$model" type="password" class="w-full"
+                :class="{ 'p-invalid': v$.password.$invalid && submitted }" />
               <label for="password">Contraseña</label>
             </FloatLabel>
             <small v-if="v$.password.$invalid && submitted" class="text-red-500">
@@ -43,9 +34,25 @@
           </div>
 
           <Button type="submit" label="Iniciar Sesión" icon="pi pi-sign-in" :loading="loading" class="w-full mt-2" />
+          <div class="text-center mt-2">
+            <Button label="¿Olvidaste tu contraseña?" link class="p-0 text-sm" @click="mostrarDialogoRecuperacion" />
+          </div>
         </form>
       </template>
     </Card>
+    <Dialog v-model:visible="dialogoRecuperacion" header="Recuperar Contraseña" :modal="true" class="w-full max-w-sm">
+      <div class="flex flex-col gap-4">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+        </p>
+        <div class="flex flex-col gap-2">
+          <label for="emailReset">Correo electrónico</label>
+          <InputText id="emailReset" v-model="emailRecuperacion" class="w-full" />
+        </div>
+        <Button label="Enviar Correo" icon="pi pi-send" :loading="cargandoRecuperacion"
+          @click="enviarCorreoRecuperacion" />
+      </div>
+    </Dialog>
   </div>
 </template>
 
@@ -99,14 +106,48 @@ const handleLogin = async () => {
 
   } catch (error) {
     console.error(error)
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: error.message === 'Invalid login credentials' ? 'Credenciales incorrectas' : 'Error al iniciar sesión', 
-      life: 3000 
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error.message === 'Invalid login credentials' ? 'Credenciales incorrectas' : 'Error al iniciar sesión',
+      life: 3000
     })
   } finally {
     loading.value = false
+  }
+}
+// --- LÓGICA DE RECUPERACIÓN ---
+const dialogoRecuperacion = ref(false)
+const emailRecuperacion = ref('')
+const cargandoRecuperacion = ref(false)
+
+const mostrarDialogoRecuperacion = () => {
+  emailRecuperacion.value = ''
+  dialogoRecuperacion.value = true
+}
+
+const enviarCorreoRecuperacion = async () => {
+  if (!emailRecuperacion.value) {
+    toast.add({ severity: 'warn', summary: 'Atención', detail: 'Ingresa un correo', life: 3000 })
+    return
+  }
+
+  cargandoRecuperacion.value = true
+  try {
+    // Esta función envía el mail mágico
+    const { error } = await supabase.auth.resetPasswordForEmail(emailRecuperacion.value, {
+      redirectTo: 'http://localhost:5173/update-password', // A dónde vuelve el usuario
+    })
+
+    if (error) throw error
+
+    toast.add({ severity: 'success', summary: 'Correo enviado', detail: 'Revisa tu bandeja de entrada', life: 5000 })
+    dialogoRecuperacion.value = false
+
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Error', detail: error.message, life: 3000 })
+  } finally {
+    cargandoRecuperacion.value = false
   }
 }
 </script>

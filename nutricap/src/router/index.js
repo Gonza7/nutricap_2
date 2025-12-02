@@ -1,6 +1,7 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import UpdatePasswordView from '../views/UpdatePasswordView.vue'
 import { supabase } from '@/supabase' // Importar cliente
 
 const router = createRouter({
@@ -40,7 +41,13 @@ const router = createRouter({
       name: 'test', 
       component: () => import('../views/TestView.vue'), 
       meta: { requiresAuth: true } 
-    }
+    },
+    {
+      path: '/update-password',
+      name: 'update-password',
+      component: UpdatePasswordView,
+      meta: { requiresAuth: true } // El link de email ya nos da la sesión
+    },
   ]
 })
 

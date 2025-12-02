@@ -117,6 +117,12 @@ function parsearNumero(valor) {
 
 onMounted(() => {
   aplicarTemaGuardado()
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      // Si el evento es recuperación, mandarlo a cambiar pass
+      router.push({ name: 'update-password' })
+    }
+  })
   db.alimentos
     .count()
     .then((count) => {
